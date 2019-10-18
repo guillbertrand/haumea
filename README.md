@@ -13,9 +13,9 @@ Small &amp; fast python library to build more sustainable websites...
 ### Directory Structure (base)
 
 	/content/
-		index.html
+	   index.html
 	/layouts/
-		_base.html
+	   _base.html
 	/config.json
 
 
@@ -23,20 +23,20 @@ Small &amp; fast python library to build more sustainable websites...
 
 
 	/content/
-		 index.html
-		 page.html
-		 /blog/              
-			/post-1.html   
-			/post-2.html   
-			/post-3.html   
-		/products/        
-			 /_product.html 
+	    index.html
+	    page.html
+	    /blog/              
+	        /post-1.html   
+		/post-2.html   
+		/post-3.html   
+	    /products/        
+		/_product.html 
 	/layouts/
-		 /partials/
-			/header.html
-			/footer.html
-		_base.html
-		 page.html
+	    /partials/
+		/header.html
+		/footer.html
+	    _base.html
+	    page.html
 	/config.json
 
 
