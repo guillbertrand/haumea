@@ -4,7 +4,7 @@ Small &amp; fast python library to build more sustainable websites
 Work in progress...
 
 
-###Directory Structure (base)
+### Directory Structure (base)
 
 	/content/
 		index.html
@@ -13,7 +13,7 @@ Work in progress...
 	/config.json
 
 
-###Directory Structure (sample)
+### Directory Structure (sample)
 
 
 	/content/
@@ -34,7 +34,7 @@ Work in progress...
 	/config.json
 
 
-###Templating tags
+### Templating tags
 
 
 	{{ inlude "partials/header.html" }}
@@ -55,10 +55,10 @@ Work in progress...
 
 	{{ image media_1 jpg 600x q60 }}
 
-###Content configuration 
+### Content configuration 
 
 
-####Static page
+#### Static page
 
 ------------
 {
@@ -69,7 +69,7 @@ Work in progress...
 
 
 
-####Dynamic page
+#### Dynamic page
 ------------
 {
     "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/?auth_token=XXX",
@@ -81,7 +81,7 @@ Work in progress...
 }
 
 
-####Ghost page
+#### Ghost page
 ------------
 {
     "json-source" : "https://api.buttercms.com/v2/content/products/?auth_token=XXX",
