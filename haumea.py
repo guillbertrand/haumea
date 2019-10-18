@@ -127,7 +127,7 @@ class Page(PageCommon):
             self.output_filename = os.path.join(output_path, self.dirname, os.path.splitext(self.basename)[0], "index.html")
         # slug with params
         else:
-            slug = self.params['slug'].replace('/', '').replace(' ', '-') # TODO slugify
+            slug = str(self.params['slug']).replace('/', '').replace(' ', '-') # TODO slugify
             self.output_filename = os.path.join(output_path, self.dirname, slug, "index.html") 
        
         self.permalink =  self.output_filename.replace(output_path, '/').replace('index.html', '')
@@ -135,7 +135,7 @@ class Page(PageCommon):
         self.nav_title = self.get_nav_title()
 
     def get_dynamic_params(self):
-        if("json-root-node" in self.params):
+        if("json-source" in self.params):
             for p_key, p_value in self.params.items():
                 if (p_value[0] == '_' and isinstance(self.items, dict)):
                     self.params[p_key] = self.get_data_from_json(self.items, p_value[1:])

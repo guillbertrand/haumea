@@ -1,0 +1,19 @@
+---
+{
+    "json-source" : "https://api.spacexdata.com/v3/launches/",
+
+    "title": "_mission_name",
+    "meta-desc" : "_mission_name",
+    "meta-title" : "_mission_name",
+    "slug" : "_flight_number",
+    
+    "menus" : [ "launches" ]
+}
+---
+<h1>{{ data mission_name }}</h1>
+<ul>
+    <li><strong>flight number</strong> : {{ data flight_number }}</li>
+    <li><strong>launch year</strong> : {{ data launch_year }}</li>
+    <li><strong>rocket name</strong> : {{ data rocket.rocket_name }}</li>
+    <li><strong>launch site</strong> : {{ data launch_site.site_name }}</li>
+</ul>
