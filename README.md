@@ -48,7 +48,7 @@ Small &amp; fast python library to build more sustainable websites... just anoth
 	{{ renderMenu main }}
 ------------
 	{{ menu main }}
-		    <li><a href="{{ permalink }}">{{ title }}</a></li>
+	    <li><a href="{{ permalink }}">{{ title }}</a></li>
 	{{ end }}
 ------------
 	{{ data title }}
