@@ -62,9 +62,9 @@ Work in progress...
 
 ------------
 	{
-    		"title":"Page d'accueil",
-    		"description":"Ma super description",
-    		"menus":["main", "footer:99"]
+	    "title":"Page d'accueil",
+	    "description":"Ma super description",
+	    "menus":["main", "footer:99"]
 	}
 
 
