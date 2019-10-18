@@ -237,7 +237,7 @@ class GhostPage(PageCommon):
 
 ###
 
-class Ceres:
+class Haumea:
 
     def __init__(self, quiet = False):
         self.layout_base = LayoutBase.get_base_layout()
@@ -308,18 +308,19 @@ class Ceres:
 
 ###
 
-input_path = 'content/'
-output_path = 'public/'
-layout_path = 'layouts/'
+working_dir = './'
+if('quickstart' in sys.argv):
+    working_dir = './quickstart/'
 
-b = Ceres()
+input_path = os.path.join(working_dir, 'content/')
+output_path = os.path.join(working_dir, 'public/')
+layout_path = os.path.join(working_dir, 'layouts/')
+
+b = Haumea()
 b.run()
 
 #
 
 if('-s' in sys.argv):
-    os.system("cd public/ && python -m SimpleHTTPServer")
-
-
-
+    os.system("cd %s && python -m SimpleHTTPServer" % output_path)
 

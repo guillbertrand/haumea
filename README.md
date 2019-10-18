@@ -3,6 +3,9 @@ Small &amp; fast python library to build more sustainable websites
 
 Work in progress...
 
+Quickstart sample... just run :
+	python haumea.py -s quickstart
+
 
 ### Directory Structure (base)
 
