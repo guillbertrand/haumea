@@ -68,9 +68,9 @@ Small &amp; fast python library to build more sustainable websites...
 
 ------------
 	{
-	    "title":"Page d'accueil",
-	    "description":"Ma super description",
-	    "menus":["main", "footer:99"]
+	    "title":"Welcome home",
+	    "description":"A nice description...",
+	    "menus":["main", "footer"]
 	}
 
 
@@ -98,6 +98,6 @@ Small &amp; fast python library to build more sustainable websites...
 	    "meta-title" : "_meta_title",
 	    "slug" : "_slug",
 
-	    "menus" : [ "products" ]
+	    "menus" : [ "products", "footer" ]
 	}
 
