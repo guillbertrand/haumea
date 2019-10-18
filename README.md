@@ -3,12 +3,12 @@ Small &amp; fast python library to build more sustainable websites... just anoth
 
 **Work in progress...**
 
-##### Quickstart
+### Quickstart
 
 	python haumea.py -s quickstart
 
 
-### Directory Structure (base)
+#### Directory Structure (base)
 
 	/content/
 	   index.html
@@ -17,7 +17,7 @@ Small &amp; fast python library to build more sustainable websites... just anoth
 	/config.json
 
 
-### Directory Structure (sample)
+#### Directory Structure (sample)
 
 
 	/content/
@@ -38,7 +38,7 @@ Small &amp; fast python library to build more sustainable websites... just anoth
 	/config.json
 
 
-### Templating tags
+#### Templating tags
 
 
 	{{ inlude "partials/header.html" }}
@@ -59,10 +59,10 @@ Small &amp; fast python library to build more sustainable websites... just anoth
 
 	{{ image media_1 jpg 600x q60 }}
 
-### Content configuration 
+#### Content configuration 
 
 
-#### Static page
+##### Static page
 
 ------------
 	{
@@ -73,7 +73,7 @@ Small &amp; fast python library to build more sustainable websites... just anoth
 
 
 
-#### Dynamic page
+##### Dynamic page
 ------------
 	{
 	    "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/?auth_token=XXX",
@@ -85,7 +85,7 @@ Small &amp; fast python library to build more sustainable websites... just anoth
 	}
 
 
-#### Ghost page
+##### Ghost page
 ------------
 	{
 	    "json-source" : "https://api.buttercms.com/v2/content/products/?auth_token=XXX",
