@@ -3,7 +3,9 @@ Small &amp; fast python library to build more sustainable websites... just anoth
 
 **Work in progress...**
 
-### Quickstart
+### Quickstart 
+
+http://localhost:8000
 
 	python haumea.py -s quickstart
 
