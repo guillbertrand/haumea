@@ -4,77 +4,73 @@ Small &amp; fast python library to build more sustainable websites
 Work in progress...
 
 
-___Directory Structure (base)___
+###Directory Structure (base)
 
-/content/
-    index.html
-/layouts/
-    _base.html
-/config.json
+	/content/
+		index.html
+	/layouts/
+		_base.html
+	/config.json
 
-==============================
-Directory Structure (sample)
-==============================
 
-- /content/
------- index.html
------- page.html
------- /blog/              
------------- /post-1.html   
------------- /post-2.html   
------------- /post-3.html   
------- /products/        
------------- /_product.html 
+###Directory Structure (sample)
 
-- /layouts/
------- /partials/
------------- /header.html
------------- /footer.html
------- _base.html
------- page.html
 
-- /config.json
+	/content/
+		 index.html
+		 page.html
+		 /blog/              
+			/post-1.html   
+			/post-2.html   
+			/post-3.html   
+		/products/        
+			 /_product.html 
+	/layouts/
+		 /partials/
+			/header.html
+			/footer.html
+		_base.html
+		 page.html
+	/config.json
 
-==============================
-Templating tags
-==============================
 
-{{ inlude "partials/header.html" }}
+###Templating tags
 
-{{ renderContent }}
 
-{{ renderMenu main }}
+	{{ inlude "partials/header.html" }}
+------------
+	{{ renderContent }}
+------------
+	{{ renderMenu main }}
+------------
+	{{ menu main }}
+		    <li><a href="{{ permalink }}">{{ title }}</a></li>
+	{{ end }}
+------------
+	{{ data title }}
+	{{ data fields.tags[0] }}
+	{{ data fields.short_title }}
+	{{ data:%.00 fields.regular_price }}
+	{{ data:%d fields.quantity_per_box }}
 
-{{ menu main }}
-    <li><a href="{{ permalink }}">{{ title }}</a></li>
-{{ end }}
+	{{ image media_1 jpg 600x q60 }}
 
-{{ data title }}
-{{ data fields.tags[0] }}
-{{ data fields.short_title }}
-{{ data:%.00 fields.regular_price }}
-{{ data:%d fields.quantity_per_box }}
+###Content configuration 
 
-{{ image media_1 jpg 600x q60 }}
 
-==============================
-Content configuration 
-==============================
+####Static page
 
-Static page
-=============
----
+------------
 {
     "title":"Page d'accueil",
     "description":"Ma super description",
     "menus":["main", "footer:99"]
 }
----
 
 
-Dynamic page
-=============
----
+
+####Dynamic page
+------------
 {
     "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/?auth_token=XXX",
     "json-root-node" : "data.fields",
@@ -83,11 +79,10 @@ Dynamic page
     "menus" : [ "main" ],
     "slug" : "test"
 }
----
 
-Ghost page
-=============
----
+
+####Ghost page
+------------
 {
     "json-source" : "https://api.buttercms.com/v2/content/products/?auth_token=XXX",
     "json-root-node" : "data.products", 
@@ -99,4 +94,4 @@ Ghost page
     
     "menus" : [ "products" ]
 }
----
+
