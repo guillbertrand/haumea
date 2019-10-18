@@ -3,15 +3,14 @@ Small &amp; fast python library to build more sustainable websites
 
 Work in progress...
 
-==============================
-Directory Structure (base)
-==============================
 
-- /content/
------- index.html
-- /layouts/
------- _base.html
-- /config.json
+___Directory Structure (base)___
+
+/content/
+    index.html
+/layouts/
+    _base.html
+/config.json
 
 ==============================
 Directory Structure (sample)
