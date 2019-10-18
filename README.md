@@ -1,8 +1,9 @@
 # haumea
-Small &amp; fast python library to build more sustainable websites.
-Another static site generator optimized for external json data driven contents.
+Small &amp; fast python library to build more sustainable websites...
 
-Work in progress...
+... just another static site generator optimized for external json data driven contents.
+
+**Work in progress...**
 
 ##### Quickstart
 
