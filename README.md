@@ -61,37 +61,37 @@ Work in progress...
 #### Static page
 
 ------------
-{
-    "title":"Page d'accueil",
-    "description":"Ma super description",
-    "menus":["main", "footer:99"]
-}
+	{
+    		"title":"Page d'accueil",
+    		"description":"Ma super description",
+    		"menus":["main", "footer:99"]
+	}
 
 
 
 #### Dynamic page
 ------------
-{
-    "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/?auth_token=XXX",
-    "json-root-node" : "data.fields",
+	{
+	    "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/?auth_token=XXX",
+	    "json-root-node" : "data.fields",
 
-    "title" : "_seo_title",
-    "menus" : [ "main" ],
-    "slug" : "test"
-}
+	    "title" : "_seo_title",
+	    "menus" : [ "main" ],
+	    "slug" : "test"
+	}
 
 
 #### Ghost page
 ------------
-{
-    "json-source" : "https://api.buttercms.com/v2/content/products/?auth_token=XXX",
-    "json-root-node" : "data.products", 
+	{
+	    "json-source" : "https://api.buttercms.com/v2/content/products/?auth_token=XXX",
+	    "json-root-node" : "data.products", 
 
-    "title": "_title",
-    "meta-desc" : "_meta_description",
-    "meta-title" : "_meta_title",
-    "slug" : "_slug",
-    
-    "menus" : [ "products" ]
-}
+	    "title": "_title",
+	    "meta-desc" : "_meta_description",
+	    "meta-title" : "_meta_title",
+	    "slug" : "_slug",
+
+	    "menus" : [ "products" ]
+	}
 
