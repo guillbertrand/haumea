@@ -121,7 +121,7 @@ class Page(PageCommon):
 
         # index.html
         if(self.basename == 'index.html'):
-            self.output_filename = os.path.join(output_path, 'index.html')
+            self.output_filename = os.path.join(output_path, self.dirname,'index.html')
         # slug with basename
         elif(self.basename[0] != '_' and 'slug' not in self.params):
             self.output_filename = os.path.join(output_path, self.dirname, os.path.splitext(self.basename)[0], "index.html")
@@ -202,26 +202,37 @@ class Page(PageCommon):
             pages  = menus[menu_key]
             for page in pages:
                 menu_content = m[1]
+                for field in re.findall(r"{{ data:?(%.*?)?\s(.*?) }}", menu_content, re.DOTALL):
+                    exec('menu_content = page[0].render_external_data(menu_content)') 
                 for field in re.findall(r"{{ (.*?) }}", menu_content, re.DOTALL):
                     exec('field_value = page[0].'+field)
                     menu_content = menu_content.replace('{{ '+field+' }}', field_value)
                 iter_menu_content += menu_content
             final_layout = final_layout.replace('{{ menu '+menu_key+' }}'+m[1]+'{{ end }}', iter_menu_content) # TODO clean code (space, breakline etc.)
 
-        # render fields
-        matches = re.findall(r"{{ data:?(%.*?)?\s(.*?) }}", final_layout, re.DOTALL)
-        for field_path in matches:
-            field = ''
-            str_format = '%s' if not field_path[0] else str(field_path[0])
-            value = self.get_data_from_json(self.items, field_path[1])
-            fvalue = str_format % value
-            pattern = '{{ data %s }}' % field_path[1] if not field_path[0] else '{{ data:%s %s }}' % (field_path[0], field_path[1])
-            final_layout = final_layout.replace(pattern, fvalue)
+        # render data
+        final_layout = self.render_external_data(final_layout)
 
         # clean layout
         final_layout = re.sub(r"{{ (.*) }}", '', final_layout, 0, re.MULTILINE)
 
         return final_layout.encode('utf8')
+    
+    def render_external_data(self, layout):   
+        matches = re.findall(r"{{ data:?(%.*?)?\s(.*?) }}", layout, re.DOTALL)
+        for field_path in matches:
+            field = ''
+            str_format = '%s' if not field_path[0] else str(field_path[0])
+            value = self.get_data_from_json(self.items, field_path[1])
+
+            try:
+                fvalue = str_format % value
+                pattern = '{{ data %s }}' % field_path[1] if not field_path[0] else '{{ data:%s %s }}' % (field_path[0], field_path[1])
+                layout = layout.replace(pattern, fvalue)
+            except:
+                pass
+            
+        return layout
 
 
 class GhostPage(PageCommon):

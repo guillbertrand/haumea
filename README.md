@@ -50,13 +50,13 @@ Small &amp; fast python library to build more sustainable websites...
 	{{ renderMenu main }}
 ------------
 	{{ menu main }}
-		    <li><a href="{{ permalink }}">{{ title }}</a></li>
+		    <li><a href="{{ permalink }}">{{ title }} - {{ data:%.2f fields.regular_price }}</a></li>
 	{{ end }}
 ------------
 	{{ data title }}
 	{{ data fields.tags[0] }}
 	{{ data fields.short_title }}
-	{{ data:%.00 fields.regular_price }}
+	{{ data:%.2f fields.regular_price }}
 	{{ data:%d fields.quantity_per_box }}
 
 	{{ image media_1 jpg 600x q60 }}
