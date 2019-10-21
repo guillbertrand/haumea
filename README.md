@@ -1,16 +1,16 @@
 # haumea
-Small &amp; fast python library to build more sustainable websites...
-
-... just another static site generator optimized for external json data driven contents.
+Small &amp; fast python library to build more sustainable websites... just another static site generator optimized for external json data driven contents. Haumea allow you to create thouthands of static pages from external json data...
 
 **Work in progress...**
 
-##### Quickstart
+### Quickstart 
+
+http://localhost:8000
 
 	python haumea.py -s quickstart
 
 
-### Directory Structure (base)
+#### Directory Structure (base)
 
 	/content/
 	   index.html
@@ -19,7 +19,7 @@ Small &amp; fast python library to build more sustainable websites...
 	/config.json
 
 
-### Directory Structure (sample)
+#### Directory Structure (sample)
 
 
 	/content/
@@ -40,7 +40,7 @@ Small &amp; fast python library to build more sustainable websites...
 	/config.json
 
 
-### Templating tags
+#### Templating tags
 
 
 	{{ inlude "partials/header.html" }}
@@ -50,7 +50,7 @@ Small &amp; fast python library to build more sustainable websites...
 	{{ renderMenu main }}
 ------------
 	{{ menu main }}
-		    <li><a href="{{ permalink }}">{{ title }} - {{ data:%.2f fields.regular_price }}</a></li>
+	    <li><a href="{{ permalink }}">{{ title }}</a></li>
 	{{ end }}
 ------------
 	{{ data title }}
@@ -61,10 +61,10 @@ Small &amp; fast python library to build more sustainable websites...
 
 	{{ image media_1 jpg 600x q60 }}
 
-### Content configuration 
+#### Content configuration 
 
 
-#### Static page
+##### Static page
 
 ------------
 	{
@@ -75,7 +75,7 @@ Small &amp; fast python library to build more sustainable websites...
 
 
 
-#### Dynamic page
+##### Dynamic page
 ------------
 	{
 	    "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/?auth_token=XXX",
@@ -87,7 +87,7 @@ Small &amp; fast python library to build more sustainable websites...
 	}
 
 
-#### Ghost page
+##### Ghost page
 ------------
 	{
 	    "json-source" : "https://api.buttercms.com/v2/content/products/?auth_token=XXX",
