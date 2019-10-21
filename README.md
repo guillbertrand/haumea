@@ -50,7 +50,7 @@ http://localhost:8000
 	{{ renderMenu main }}
 ------------
 	{{ menu main }}
-	    <li><a href="{{ permalink }}">{{ title }}</a></li>
+	    <li><a href="{{ permalink }}">{{ title }} - {{ data:%.2f fields.regular_price }}</a></li>
 	{{ end }}
 ------------
 	{{ data title }}
