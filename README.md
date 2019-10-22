@@ -1,5 +1,5 @@
 # haumea
-Small &amp; fast python library to build more sustainable websites... just another static site generator optimized for external json data driven contents. Haumea allow you to create thouthands of static pages from external json data...
+Small &amp; fast python library to build more sustainable websites... or ....just another hybrid static site generator optimized for external JSON data driven contents. 
 
 **Work in progress...**
 
@@ -75,7 +75,7 @@ http://localhost:8000
 
 
 
-##### Single page from json
+##### Single page from JSON
 ------------
 	{
 	    "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/?auth_token=XXX",
@@ -87,7 +87,7 @@ http://localhost:8000
 	}
 
 
-##### Page bundle from json
+##### Page bundle from JSON
 ------------
 	{
 	    "json-source" : "https://api.buttercms.com/v2/content/products/?auth_token=XXX",
