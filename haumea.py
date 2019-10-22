@@ -235,7 +235,7 @@ class Page(PageCommon):
         return layout
 
 
-class GhostPage(PageCommon):
+class PageBundle(PageCommon):
     def __init__(self, path, base_layout):
         PageCommon.__init__(self, path, base_layout)
             
@@ -299,8 +299,8 @@ class Haumea:
                     self.add(page)
                     
                 elif(os.path.splitext(filename)[1] == '.html' and filename[0] == '_'):
-                    gosht_page = GhostPage(file_path, self.layout_base).get_pages()
-                    for page in gosht_page:
+                    page_bundle = PageBundle(file_path, self.layout_base).get_pages()
+                    for page in page_bundle:
                         self.add(page)
 
 

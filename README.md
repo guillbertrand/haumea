@@ -43,7 +43,7 @@ http://localhost:8000
 #### Templating tags
 
 
-	{{ inlude "partials/header.html" }}
+	{{ include "partials/header.html" }}
 ------------
 	{{ renderContent }}
 ------------
@@ -75,7 +75,7 @@ http://localhost:8000
 
 
 
-##### Dynamic page
+##### Single page from json
 ------------
 	{
 	    "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/?auth_token=XXX",
@@ -87,7 +87,7 @@ http://localhost:8000
 	}
 
 
-##### Ghost page
+##### Page bundle from json
 ------------
 	{
 	    "json-source" : "https://api.buttercms.com/v2/content/products/?auth_token=XXX",
