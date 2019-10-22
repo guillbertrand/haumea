@@ -283,6 +283,7 @@ class Haumea:
         # clean output path
         try:
             shutil.rmtree(output_path)
+            shutil.copytree(static_path, os.path.join(output_path, static_path.replace(working_dir,'')))
         except:
             pass
 
@@ -326,6 +327,7 @@ if('quickstart' in sys.argv):
 input_path = os.path.join(working_dir, 'content/')
 output_path = os.path.join(working_dir, 'public/')
 layout_path = os.path.join(working_dir, 'layouts/')
+static_path = os.path.join(working_dir, 'static/')
 
 b = Haumea()
 b.run()
