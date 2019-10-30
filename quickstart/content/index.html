@@ -5,5 +5,9 @@
 }
 ---
 <h1>Welcome !</h1>
-{{ renderMenu launches }}
+<ul>
+{% for menu in _menus.launches %}
+    <li><a href="{{menu.page.permalink}}">{{ menu.page._params.title }}</a></li>
+{% endfor %}
+</ul>
 

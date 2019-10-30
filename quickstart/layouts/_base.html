@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="">
-    {{ include "partials/head.html" }}
+    {% include "partials/head.html" %}
     <body>
-        {{ include "partials/header.html" }}
+        {% include "partials/header.html" %}
         <div id="content">
-            {{ renderContent }}
+            {{ _content }}
         </div>
-        {{ include "partials/footer.html" }}
+        {% include "partials/footer.html" %}
     </body>
 </html>
