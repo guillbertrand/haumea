@@ -110,7 +110,7 @@ class TemplateEngine():
             elif op == 'menu':
                 value = '<ul>'
                 for m in self.context['_menus'][args]:
-                    value += '<li {2}><a {2} href="{0}">{1}</a></li>'.format(m['page'].permalink, m['page']._params['title'], 'class="active"' if m['is_active'] else '')
+                    value += '<li {2}><a {2} href="{0}">{1}</a></li>'.format(m['page'].permalink, m['page']._params['nav_title'] if 'nav_title' in m['page']._params else m['page']._params['title'], 'class="active"' if m['is_active'] else '')
                 value += '</ul>'
                 self.result.append(value)
             else:
