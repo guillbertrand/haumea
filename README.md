@@ -1,10 +1,10 @@
 # haumea
 Small &amp; fast python library to build more sustainable websites... 
-Hybrid & agnostic, Haumea is a static site generator (SSG) optimized for external JSON data driven contents. 
+Hybrid & agnostic, haumea is a static site generator (SSG) optimized for external JSON data driven contents. 
 
 **Work in progress...**
 
-v0.2.1
+v0.2.2
 
 ### Quickstart 
 

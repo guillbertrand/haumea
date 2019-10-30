@@ -18,8 +18,6 @@ class Template():
         {% include "filename.html" %}
         {% menu footer %}
         {% image logo %}
-
-        {# This will be ignored #}
     """
     def __init__(self, content):
         self.text = content
@@ -32,9 +30,6 @@ class Template():
             if tok.startswith('{{'):
                 # Expression: ('exp', expr)
                 ops.append(('exp', tok[2:-2].strip()))
-            elif tok.startswith('{#'):
-                # Comment: ignore it and move on.
-                continue
             elif tok.startswith('{%'):
                 # Action tag: split into words and parse further.
                 words = tok[2:-2].strip().split()
