@@ -1,0 +1,34 @@
+---
+{
+    "json-source" : "https://api.ssodnet.imcce.fr/quaero/1/sso/search?q=type:%22Dwarf%20Planet%22",
+    "json-root-node" : "data",
+
+    "title": "{{ _json.name }}",
+    "meta-desc" : "{{ _json.type }} - {{ _json.system }}",
+    "meta-title" : "{{ _json.name }}",
+    "slug" : "{{ _json.id }}",
+    
+    "menus" : [ "bodies" ]
+}
+---
+<h1>{{ _json.name }}</h1>
+<strong>General </strong>
+<ul>
+    <li><strong>Name</strong> : {{ _json.name }}</li>
+    <li><strong>System name</strong> : {{ _json.system }}</li>
+    <li><strong>Type</strong> : {{ _json.type }}</li>
+    <li><strong>Parent</strong> : {{ _json.parent }}</li>
+ 
+</ul>
+<strong>Class </strong>
+<ul>
+    {% for i in _json.class %}
+        <li>{{ i }}</li>
+    {% endfor %}
+</ul>
+<strong>Aliases </strong>
+<ul>
+    {% for i in _json.aliases %}
+        <li>{{ i }}</li>
+    {% endfor %}
+</ul>
