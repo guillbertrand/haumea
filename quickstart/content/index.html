@@ -5,7 +5,7 @@
 }
 ---
 <h1>Welcome !</h1>
-<h2>{{ _params.title }}</h2>
+<h2>{{_params.title}}</h2>
 <ul>
 {% for menu in _menus.bodies %}
     <li><a href="{{menu.page.permalink}}">{{ menu.page._params.title }}</a></li>
