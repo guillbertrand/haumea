@@ -4,6 +4,8 @@ Hybrid & agnostic static site generator (SSG) optimized for external JSON data d
 
 **Work in progress...**
 
+v0.2.1
+
 ### Quickstart 
 
 http://localhost:8000
@@ -43,22 +45,19 @@ http://localhost:8000
 
 #### Templating tags
 
-
-	{{ include "partials/header.html" }}
+	{{ _content }}
 ------------
-	{{ renderContent }}
+	{% include "partials/header.html" %}
 ------------
-	{{ renderMenu main }}
+	{% menu main %}
 ------------
-	{{ menu main }}
-	    <li><a href="{{ permalink }}">{{ title }} - {{ data:%.2f fields.regular_price }}</a></li>
+	{{ for menu in _menus.main }}
+	    <li><a href="{{ menu.page.permalink }}">{{ menu.page._params.title }} - {{ menu.page._json_.fields.regular_price|{:.2f} }}</a></li>
 	{{ end }}
 ------------
-	{{ data title }}
-	{{ data fields.tags[0] }}
-	{{ data fields.short_title }}
-	{{ data:%.2f fields.regular_price }}
-	{{ data:%d fields.quantity_per_box }}
+	{{ title }}
+	{{ fields.short_title }}
+	{{ fields.regular_price|{:.2f} }}
 
 	{{ image media_1 jpg 600x q60 }}
 
@@ -82,7 +81,7 @@ http://localhost:8000
 	    "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/?auth_token=XXX",
 	    "json-root-node" : "data.fields",
 
-	    "title" : "_seo_title",
+	    "title" : "{{ _json.fields.title }} - {{ _json.fields.product_qty }}",
 	    "menus" : [ "main" ],
 	    "slug" : "test"
 	}
@@ -95,9 +94,9 @@ http://localhost:8000
 	    "json-root-node" : "data.products", 
 
 	    "title": "_title",
-	    "meta-desc" : "_meta_description",
-	    "meta-title" : "_meta_title",
-	    "slug" : "_slug",
+	    "meta-desc" : "{{ _json.meta_description }}",
+	    "meta-title" : "{{ _json.meta_title }}",
+	    "slug" : "{{ _json.slug }}",
 
 	    "menus" : [ "products", "footer" ]
 	}
