@@ -4,13 +4,14 @@ Hybrid & agnostic, haumea is a static site generator (SSG) optimized for externa
 
 **Work in progress...**
 
-v0.2.3
+v0.3.1
 
-### Quickstart 
+### Quickstart sample
 
-http://localhost:8000
+	python haumea.py build --path quickstart
+	python haumea.py serve --path quickstart
 
-	python haumea.py -s quickstart
+	http://localhost:8000
 
 ### Documentation 
 
@@ -34,7 +35,8 @@ http://localhost:8000
 		/post-2.html   
 		/post-3.html   
 	    /products/        
-		/_product.html 
+			/_product.html 
+			/_product.graphql
 	/layouts/
 	    /partials/
 		/header.html
@@ -52,9 +54,9 @@ http://localhost:8000
 ------------
 	{% menu main %}
 ------------
-	{{ for menu in _menus.main }}
+	{% for menu in _menus.main %}
 	    <li><a href="{{ menu.page.permalink }}">{{ menu.page._params.title }} - {{ menu.page._json_.fields.regular_price|{:.2f} }}</a></li>
-	{{ end }}
+	{% endfor %}
 ------------
 	{{ title }}
 	{{ fields.short_title }}
@@ -80,8 +82,10 @@ http://localhost:8000
 ##### Single page from JSON
 ------------
 	{
-	    "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/?auth_token=XXX",
-	    "json-root-node" : "data.fields",
+	    "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/",
+		"json-request-type" : "get",
+		"json-params" : { "locale" : "fr" , "auth_token" : "XXXXXXX" },
+    	"json-root-node" : "data", 
 
 	    "title" : "{{ _json.fields.title }} - {{ _json.fields.product_qty }}",
 	    "menus" : [ "main" ],
@@ -89,11 +93,13 @@ http://localhost:8000
 	}
 
 
-##### Page bundle from JSON
+##### Page bundle from JSON with GraphQL
 ------------
 	{
-	    "json-source" : "https://api.buttercms.com/v2/content/products/?auth_token=XXX",
-	    "json-root-node" : "data.products", 
+		"json-source" : "https://graphql.datocms.com/",
+		"json-request-type" : "graphql",
+		"json-headers" : {"Authorization":"token xxxxxxx"},
+		"json-root-node" : "data.allProduits", 
 
 	    "title": "_title",
 	    "meta-desc" : "{{ _json.meta_description }}",
