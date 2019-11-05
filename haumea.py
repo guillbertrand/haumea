@@ -6,6 +6,9 @@ import time
 import requests
 import logging
 import shutil 
+import argparse
+import posixpath
+import ssl
 
 ##
 
@@ -66,8 +69,7 @@ class Template():
         if ops_stack:
             logging.error("\U0001F4A5  Unmatched action tag: %r" % ops_stack[-1][0])
 
-        self.ops = ops
-        
+        self.ops = ops   
 
     def render(self, context=None):
         engine = TemplateEngine(context)
@@ -176,17 +178,28 @@ class Page():
         if(not self._json and "json-source" in self._params):
             try:
                 ts = time.time()
-                res = requests.get(self._params['json-source'])
+ 
+                source = self._params['json-source']
+                payload = self._params['json-params'] if 'json-params' in self._params else ''
+                headers = self._params['json-headers'] if 'json-headers' in self._params else ''
+                root_node = self._params['json-root-node'] if 'json-root-node' in self._params else ''
+                req_type = self._params['json-request-type'] if 'json-request-type' in self._params else 'get'
+
+                if req_type == 'post':
+                    res = requests.post(source, json= payload, headers=headers)
+                else:
+                    res = requests.get(source, params= payload, headers=headers)
+
                 if(res.status_code == 200):
                     fields_dict = json.loads(res.text)
-                    if("json-root-node" in self._params):
-                        self._json = Haumea.get_data_from_json(fields_dict, self._params["json-root-node"])
+                    if(root_node):
+                        self._json = Haumea.get_data_from_json(fields_dict, root_node)
                     else:
                         self._json = fields_dict 
                     te = time.time()
-                    logging.info('Load json \U0001F52D  - {:2.2f}ms : {:.80}...'.format((te-ts)*1000, self._params['json-source']))
+                    logging.info('Load json \U0001F52D  - {:s} request - {:2.2f}ms : {:.80}...'.format(req_type, (te-ts)*1000, source))
             except:
-                logging.error('\U0001F4A5  Unable to load json file {:.80}'.format(self._params['json-source']))
+                logging.error('\U0001F4A5  Unable to load json file {:.80}'.format(source))
 
     def get_params(self):
         result = {}
@@ -248,8 +261,8 @@ class PageBundle(Page):
 
 class Haumea:
 
-    def __init__(self, quiet = False):
-        self.quiet = quiet
+    def __init__(self, logging_level = logging.INFO):
+        self.logging_level = logging_level
         self.menus = {}
         self.pages = []
         self.layout_base = Haumea.get_file_contents(os.path.join(layout_path, '_base.html'))
@@ -307,10 +320,10 @@ class Haumea:
 
     #
 
-    def build(self, level=logging.INFO):
+    def build(self):
 
         FORMAT = '* %(levelname)s - %(message)s'
-        logging.basicConfig(level=level,format=FORMAT)
+        logging.basicConfig(level=self.logging_level,format=FORMAT)
         logger = logging.getLogger('Haumea')
 
         logger.info('\U0001F680  Start build \U0001F680')
@@ -358,22 +371,50 @@ class Haumea:
         te = time.time()
         logger.info('\U0001F331  %d pages built in %2.2f ms \U0001F30D' % (len(self.pages),(te - ts) * 1000))
 
+#
+
+def haumea_parse_args():
+    parser = argparse.ArgumentParser(
+        description='Haumea Static Site Generator',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument("action", 
+                        default = "build",
+                        help="Action : build, server")
+    parser.add_argument('-p', '--port', default=8000, type=int, nargs="?",
+                        help="Port to Listen On")
+    parser.add_argument('--path', default='./',
+                        help='Path to haumea source directory to serve. ' +
+                        'Relative to current directory')
+    parser.add_argument('-o', '--output', default='public/',
+                        help='Where to output the generated files. If not '
+                        'specified, a directory will be created, named '
+                        '"public" in the current path.')
+    parser.add_argument('-q', '--quiet', action='store_const',
+                        default=logging.INFO,
+                        const=logging.CRITICAL, dest='verbosity',
+                        help='Show only critical errors.')
+    return parser.parse_args()
 
 #
 
-working_dir = './'
-if('quickstart' in sys.argv):
-    working_dir = './quickstart/'
+args = haumea_parse_args()
 
+working_dir = args.path
 input_path = os.path.join(working_dir, 'content/')
 output_path = os.path.join(working_dir, 'public/')
 layout_path = os.path.join(working_dir, 'layouts/')
 static_path = os.path.join(working_dir, 'static/')
 
-h = Haumea()
-h.build()
+if(args.output):
+    output_path = os.path.join(working_dir, args.output)
 
-#
+h = Haumea(args.verbosity)
 
-if('-s' in sys.argv):
+if(args.action == "build"):
+    h.build()
+
+if(args.action == "server"):
+    h.build()
     os.system("cd %s && python3 -m http.server --cgi" % output_path)
+
