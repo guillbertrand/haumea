@@ -67,8 +67,10 @@ v0.3.1
 
 
 ##### Static page
-
 ------------
+
+page.html
+
 	{
 	    "title":"Welcome home",
 		"nav_title":"Home",
@@ -80,6 +82,9 @@ v0.3.1
 
 ##### Single page from JSON
 ------------
+
+page.html
+
 	{
 		"json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/",
 		"json-request-type" : "get",
@@ -94,6 +99,9 @@ v0.3.1
 
 ##### Page bundle from JSON with GraphQL
 ------------
+
+_page.html 
+
 	{
 		"json-source" : "https://graphql.datocms.com/",
 		"json-request-type" : "graphql",
@@ -108,3 +116,28 @@ v0.3.1
 		"menus" : [ "products", "footer" ]
 	}
 
+
+_page.graphql
+
+	query {
+		launchesPast(limit: 80) { 
+			mission_name 
+			details
+			launch_date_local 
+			launch_site { 
+				site_name_long 
+			} 
+			links { 
+				article_link 
+				video_link 
+				flickr_images
+			} 
+			rocket { 
+				rocket_name 
+			} 
+			ships { 
+				name 
+				image 
+			}
+		}
+	}
