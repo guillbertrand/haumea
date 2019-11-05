@@ -185,6 +185,12 @@ class Page():
                 root_node = self._params['json-root-node'] if 'json-root-node' in self._params else ''
                 req_type = self._params['json-request-type'] if 'json-request-type' in self._params else 'get'
 
+                if req_type == 'graphql':
+                    gql_file = os.path.splitext(self.input_filename)[0]+'.graphql'
+                    if os.path.exists(gql_file):
+                        payload = {'query': Haumea.get_file_contents(gql_file)}
+                        req_type = 'post'
+                
                 if req_type == 'post':
                     res = requests.post(source, json= payload, headers=headers)
                 else:
@@ -226,7 +232,6 @@ class Page():
         return result
 
     def render(self, menus):
-
         amenus = {}
         for k, m in menus.items():
             amenus[k] = []
@@ -369,7 +374,10 @@ class Haumea:
             logger.info('Render page \U0001F527 \t %s' % (page.output_filename))
         
         te = time.time()
-        logger.info('\U0001F331  %d pages built in %2.2f ms \U0001F30D' % (len(self.pages),(te - ts) * 1000))
+        nb = len(self.pages)
+        tt = (te - ts) * 1000
+        me = tt / nb
+        logger.info('\U0001F331  %d pages built in %2.2f ms (%2.2fms/pp) \U0001F30D ' % (nb,tt, me))
 
 #
 
@@ -380,7 +388,7 @@ def haumea_parse_args():
     )
     parser.add_argument("action", 
                         default = "build",
-                        help="Action : build, server")
+                        help="Action : build, serve")
     parser.add_argument('-p', '--port', default=8000, type=int, nargs="?",
                         help="Port to Listen On")
     parser.add_argument('--path', default='./',
@@ -414,7 +422,7 @@ h = Haumea(args.verbosity)
 if(args.action == "build"):
     h.build()
 
-if(args.action == "server"):
+if(args.action == "serve"):
     h.build()
     os.system("cd %s && python3 -m http.server --cgi" % output_path)
 
