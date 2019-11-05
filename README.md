@@ -8,7 +8,6 @@ v0.3.1
 
 ### Quickstart sample
 
-	python haumea.py build --path quickstart
 	python haumea.py serve --path quickstart
 
 	http://localhost:8000
