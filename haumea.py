@@ -340,7 +340,7 @@ class Haumea:
 
         # copy static assets
         try:
-            shutil.copytree(static_path, os.path.join(output_path, static_path.replace(working_dir,'')))
+            shutil.copytree(static_path, os.path.join(output_path, static_path.replace(static_path,'')))
             logger.info('Copy static directory : %s' % static_path)
         except:
             logger.warning('Unable to copy static assets : %s' % static_path)
@@ -376,4 +376,4 @@ h.build()
 #
 
 if('-s' in sys.argv):
-    os.system("cd %s && python -m SimpleHTTPServer" % output_path)
+    os.system("cd %s && python3 -m http.server --cgi" % output_path)

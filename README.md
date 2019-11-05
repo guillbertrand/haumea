@@ -4,7 +4,7 @@ Hybrid & agnostic, haumea is a static site generator (SSG) optimized for externa
 
 **Work in progress...**
 
-v0.2.2
+v0.2.3
 
 ### Quickstart 
 
@@ -70,6 +70,7 @@ http://localhost:8000
 ------------
 	{
 	    "title":"Welcome home",
+		"nav_title":"Home",
 	    "description":"A nice description...",
 	    "menus":["main", "footer"]
 	}
