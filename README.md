@@ -1,6 +1,6 @@
 # haumea
 Small &amp; fast python library to build more sustainable websites... 
-Hybrid & agnostic, haumea is a static site generator (SSG) optimized for external JSON data driven contents. 
+Hybrid & agnostic, haumea is a static site generator (SSG) optimized for external JSON (Rest API, GraphQL etc.) data driven contents. 
 
 **Work in progress...**
 
@@ -81,14 +81,14 @@ v0.3.1
 ##### Single page from JSON
 ------------
 	{
-	    "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/",
+		"json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/",
 		"json-request-type" : "get",
 		"json-params" : { "locale" : "fr" , "auth_token" : "XXXXXXX" },
-    	"json-root-node" : "data", 
+		"json-root-node" : "data", 
 
-	    "title" : "{{ _json.fields.title }} - {{ _json.fields.product_qty }}",
-	    "menus" : [ "main" ],
-	    "slug" : "test"
+		"title" : "{{ _json.fields.title }} - {{ _json.fields.product_qty }}",
+		"menus" : [ "main" ],
+		"slug" : "test"
 	}
 
 
@@ -100,11 +100,11 @@ v0.3.1
 		"json-headers" : {"Authorization":"token xxxxxxx"},
 		"json-root-node" : "data.allProduits", 
 
-	    "title": "_title",
-	    "meta-desc" : "{{ _json.meta_description }}",
-	    "meta-title" : "{{ _json.meta_title }}",
-	    "slug" : "{{ _json.slug }}",
+		"title": "_title",
+		"meta-desc" : "{{ _json.meta_description }}",
+		"meta-title" : "{{ _json.meta_title }}",
+		"slug" : "{{ _json.slug }}",
 
-	    "menus" : [ "products", "footer" ]
+		"menus" : [ "products", "footer" ]
 	}
 
