@@ -1,7 +1,8 @@
 /*
-!haumea.py
-!/quickstart
-/quickstart/public/
+!haumea/
+!/sample
+/sample/public/
 !LICENSE
 !README.md
 !.gitignore
+!setup.py

@@ -188,6 +188,7 @@ class Page():
                 if req_type == 'graphql':
                     gql_file = os.path.splitext(self.input_filename)[0]+'.graphql'
                     if os.path.exists(gql_file):
+                        logging.debug('GraphQL file find {:s}'.format(gql_file))
                         payload = {'query': Haumea.get_file_contents(gql_file)}
                         req_type = 'post'
                 
@@ -204,6 +205,7 @@ class Page():
                         self._json = fields_dict 
                     te = time.time()
                     logging.info('Load json \U0001F52D  - {:s} request - {:2.2f}ms : {:.80}...'.format(req_type, (te-ts)*1000, source))
+                    logging.debug('{:s}'.format(res.text))
             except:
                 logging.error('\U0001F4A5  Unable to load json file {:.80}'.format(source))
 
@@ -371,7 +373,7 @@ class Haumea:
             f=open(page.output_filename, "w")
             f.write(page.render(self.menus))
             f.close()
-            logger.info('Render page \U0001F527 \t %s' % (page.output_filename))
+            logger.info('Render page \U0001F527\U00002728  \t %s' % (page.output_filename.replace(working_dir,'')))
         
         te = time.time()
         nb = len(self.pages)
@@ -388,16 +390,17 @@ def haumea_parse_args():
     )
     parser.add_argument("action", 
                         default = "build",
-                        help="Action : build, serve")
+                        help="Action : build, serve, add")
     parser.add_argument('-p', '--port', default=8000, type=int, nargs="?",
                         help="Port to Listen On")
-    parser.add_argument('--path', default='./',
-                        help='Path to haumea source directory to serve. ' +
-                        'Relative to current directory')
     parser.add_argument('-o', '--output', default='public/',
                         help='Where to output the generated files. If not '
                         'specified, a directory will be created, named '
                         '"public" in the current path.')
+    parser.add_argument('-d', '--debug', action='store_const',
+                        default=logging.INFO,
+                        const=logging.DEBUG, dest='verbosity',
+                        help='Show all messages, including debug messages.')
     parser.add_argument('-q', '--quiet', action='store_const',
                         default=logging.INFO,
                         const=logging.CRITICAL, dest='verbosity',
@@ -406,23 +409,27 @@ def haumea_parse_args():
 
 #
 
-args = haumea_parse_args()
-
-working_dir = args.path
+working_dir = os.getcwd()
 input_path = os.path.join(working_dir, 'content/')
 output_path = os.path.join(working_dir, 'public/')
 layout_path = os.path.join(working_dir, 'layouts/')
 static_path = os.path.join(working_dir, 'static/')
 
-if(args.output):
-    output_path = os.path.join(working_dir, args.output)
+def main():
+    args = haumea_parse_args()
+    action = args.action 
+    if(args.output):
+        output_path = os.path.join(working_dir, args.output)
 
-h = Haumea(args.verbosity)
+    h = Haumea(args.verbosity)
 
-if(args.action == "build"):
-    h.build()
+    if(action == "build"):
+        h.build()
 
-if(args.action == "serve"):
-    h.build()
-    os.system("cd %s && python3 -m http.server --cgi" % output_path)
+    if(action == "serve"):
+        h.build()
+        os.system("python3 -m http.server --bind 127.0.0.1 --directory %s" % output_path)
+
+
+
 
