@@ -6,6 +6,14 @@ import argparse
 import haumea
 import shutil
 
+_QUICKSTART_PATH = os.path.join(
+    os.path.dirname(
+        os.path.abspath(haumea.__file__)
+    ),
+    'quickstart'
+)
+
+
 def haumea_parse_args():
     parser = argparse.ArgumentParser(description='Haumea Static Site Generator',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("basedir", 
@@ -21,7 +29,7 @@ def main():
     if(args.basedir):
         # create project skeleton
         try:
-            shutil.copytree('haumea/quickstart/',  args.basedir)
+            shutil.copytree(_QUICKSTART_PATH,  args.basedir)
             logger.info('Create project folder "%s"' % args.basedir)
             logger.info('Create content folder "%s/content/"' % args.basedir)
             logger.info('Create content layouts "%s/layouts/"' % args.basedir)

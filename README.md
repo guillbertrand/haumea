@@ -11,9 +11,9 @@ Work in progress...
 
 ### CLI
 
-	haumea-quickstart
-	haumea build
-	haumea serve
+	> haumea-quickstart yourprojectname
+	> haumea build
+	> haumea serve
 
 ### Documentation 
 
