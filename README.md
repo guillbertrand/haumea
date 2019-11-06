@@ -1,17 +1,9 @@
 # haumea
-##########
+
 Small &amp; fast python library to build more sustainable websites... 
 Hybrid & agnostic, haumea is a static site generator (SSG) optimized for external JSON (REST API, GraphQL etc.) data driven contents. 
 
-**Work in progress...**
-
-v0.3.7
-
-
 ### Installation
-
-Install Haumea on Python 3.6+ by running the following command in your preferred
-terminal, prefixing with ``sudo`` if permissions warrant::
 
     pip install haumea
 
