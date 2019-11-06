@@ -1,5 +1,6 @@
 /*
-!haumea/
+!/haumea/
+/haumea/__pycache__/
 !/sample
 /sample/public/
 !LICENSE
