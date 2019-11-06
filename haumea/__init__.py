@@ -10,6 +10,12 @@ import argparse
 import posixpath
 import ssl
 
+try:
+    __version__ = __import__('pkg_resources') \
+        .get_distribution('haumea').version
+except Exception:
+    __version__ = "unknown"
+
 ##
 
 class Template():
@@ -332,8 +338,7 @@ class Haumea:
         FORMAT = '* %(levelname)s - %(message)s'
         logging.basicConfig(level=self.logging_level,format=FORMAT)
         logger = logging.getLogger('Haumea')
-
-        logger.info('\U0001F680  Start build \U0001F680')
+        logger.info('\U0001F680  Haumea %s - Start build \U0001F680' % __version__)
 
         # scan dir
         for root, subdirs, files in os.walk(input_path):
@@ -373,7 +378,7 @@ class Haumea:
             f=open(page.output_filename, "w")
             f.write(page.render(self.menus))
             f.close()
-            logger.info('Render page \U0001F527\U00002728  \t %s' % (page.output_filename.replace(working_dir,'')))
+            logger.info('\U00002728  Render page \U0001F527  %s' % (page.output_filename.replace(working_dir,'')))
         
         te = time.time()
         nb = len(self.pages)
@@ -384,13 +389,10 @@ class Haumea:
 #
 
 def haumea_parse_args():
-    parser = argparse.ArgumentParser(
-        description='Haumea Static Site Generator',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
+    parser = argparse.ArgumentParser(description='Haumea Static Site Generator',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("action", 
                         default = "build",
-                        help="Action : build, serve, add")
+                        help="Action : build, serve")
     parser.add_argument('-p', '--port', default=8000, type=int, nargs="?",
                         help="Port to Listen On")
     parser.add_argument('-o', '--output', default='public/',
@@ -405,6 +407,8 @@ def haumea_parse_args():
                         default=logging.INFO,
                         const=logging.CRITICAL, dest='verbosity',
                         help='Show only critical errors.')
+    parser.add_argument('-v','--version', action='version', version=__version__,
+                        help='Print the version')
     return parser.parse_args()
 
 #
