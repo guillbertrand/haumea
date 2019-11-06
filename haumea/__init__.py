@@ -420,6 +420,7 @@ layout_path = os.path.join(working_dir, 'layouts/')
 static_path = os.path.join(working_dir, 'static/')
 
 def main():
+    global output_path
     args = haumea_parse_args()
     action = args.action 
     if(args.output):
