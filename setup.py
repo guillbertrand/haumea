@@ -5,13 +5,14 @@ with open("README.md", "r") as fh:
 
 entry_points = {
     'console_scripts': [
-        'haumea = haumea.__main__:main'
+        'haumea = haumea.__main__:main',
+        'haumea-quickstart = haumea.quickstart:main'
     ]
 }
 
 setuptools.setup(
     name="haumea", 
-    version="0.4.0",
+    version="0.4.1",
     author="Guillaume Betrand",
     author_email="gbe.io@pm.me",
     description="Small & fast python library to build static websites",

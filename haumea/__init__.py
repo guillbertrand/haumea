@@ -19,15 +19,6 @@ except Exception:
 ##
 
 class Template():
-    """
-        {{var|{:2.2f}}}
-
-        {% for var in list %}...{% endfor %}
-        {% if var %}...{% endif %}
-        {% include "filename.html" %}
-        {% menu footer %}
-        {% image logo %}
-    """
     def __init__(self, content):
         self.text = content
 
@@ -279,7 +270,6 @@ class Haumea:
         self.menus = {}
         self.pages = []
         self.layout_base = Haumea.get_file_contents(os.path.join(layout_path, '_base.html'))
-    #
 
     @staticmethod
     def get_file_contents(filename):
@@ -293,26 +283,6 @@ class Haumea:
             logging.error('\U0001F4A5  Unable to load file {:.80}'.format(filename))
         return contents
 
-    #
-    def add(self, page):
-        # add menus
-        for menu in page.get_menus():
-            menu_items = menu.split(':')
-            m = menu_items[0]
-            weight = 0 if len(menu_items) != 2 else menu_items[1]
-            if(m in self.menus):
-                self.menus[m].append([page, weight])
-            else:
-                self.menus[m] = [[page, weight]]
-
-        # sort menus
-        for key, menu in self.menus.items():
-            self.menus[key] = sorted(menu, key = lambda val: int(val[1]))
-
-        # add pages
-        self.pages.append(page)
-
-    # 
     @staticmethod 
     def get_data_from_json(json_data, json_path):
         res = ''
@@ -331,8 +301,24 @@ class Haumea:
             pass  
         return res
 
-    #
+    def add(self, page):
+        # add menus
+        for menu in page.get_menus():
+            menu_items = menu.split(':')
+            m = menu_items[0]
+            weight = 0 if len(menu_items) != 2 else menu_items[1]
+            if(m in self.menus):
+                self.menus[m].append([page, weight])
+            else:
+                self.menus[m] = [[page, weight]]
 
+        # sort menus
+        for key, menu in self.menus.items():
+            self.menus[key] = sorted(menu, key = lambda val: int(val[1]))
+
+        # add pages
+        self.pages.append(page)
+    
     def build(self):
 
         FORMAT = '* %(levelname)s - %(message)s'
