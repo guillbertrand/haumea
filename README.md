@@ -11,6 +11,7 @@ Work in progress...
 
 ### CLI
 
+	haumea-quickstart
 	haumea build
 	haumea serve
 
@@ -22,8 +23,6 @@ Work in progress...
 	   index.html
 	/layouts/
 	   _base.html
-	/config.json
-
 
 #### Directory Structure (sample)
 
@@ -44,8 +43,6 @@ Work in progress...
 		/footer.html
 	    _base.html
 	    page.html
-	/config.json
-
 
 #### Templating tags
 
@@ -126,14 +123,6 @@ _page.graphql
 			mission_name 
 			details
 			launch_date_local 
-			launch_site { 
-				site_name_long 
-			} 
-			links { 
-				article_link 
-				video_link 
-				flickr_images
-			} 
 			rocket { 
 				rocket_name 
 			} 
