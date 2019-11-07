@@ -76,30 +76,30 @@ yourprojectname
 ### Templating tags (layouts dir)
 
 ```bash
-	{{ _content }} 				# render your content into template
+{{ _content }} 				# render your content into template
 ```
 
 ```bash
-	{% include "partials/header.html" %}	# basic template include
+{% include "partials/header.html" %}	# basic template include
 ```
 
 ```bash
-	{% menu main %}				# basic render of menu
+{% menu main %}				# basic render of menu
 ```
 
 ```bash
-	# custom render of menu
-	{% for menu in _menus.main %}
-	    <li><a href="{{ menu.page.permalink }}">{{ menu.page._params.title }} - {{ menu.page._json_.fields.regular_price|{:.2f} }}</a></li>
-	{% endfor %}
+# custom render of menu
+{% for menu in _menus.main %}
+    <li><a href="{{ menu.page.permalink }}">{{ menu.page._params.title }} - {{ menu.page._json_.fields.regular_price|{:.2f} }}</a></li>
+{% endfor %}
 ```
 
 ```bash
-	{{ title }}
-	{{ fields.short_title }}
-	{{ fields.regular_price|{:.2f} }}
+{{ title }}
+{{ fields.short_title }}
+{{ fields.regular_price|{:.2f} }}
 
-	{{ image media_1 jpg 600x q60 }}
+{{ image media_1 jpg 600x q60 }}
 ```
 
 ### Content config 
@@ -111,10 +111,10 @@ yourprojectname
 ```bash
 ---
 {
-    "title":"Welcome home",
+	"title":"Welcome home",
 	"nav_title":"Home",
-    "description":"A nice description...",
-    "menus":["main", "footer"]
+	"description":"A nice description...",
+	"menus":["main", "footer"]
 }
 ---
 ```
@@ -139,7 +139,7 @@ yourprojectname
 
 #### Page bundle from JSON with GraphQL
 
-**_page.html **
+**_page.html**
 ```bash
 ---
 {
