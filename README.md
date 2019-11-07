@@ -5,17 +5,49 @@ Hybrid & agnostic, haumea is a static site generator (SSG) optimized for externa
 
 Work in progress...
 
-### Installation
+## Installation
 
-    pip install haumea
+```bash
+pip install haumea
+```
 
-### CLI
+## Quickstart
 
-	> haumea-quickstart yourprojectname
-	> haumea build
-	> haumea serve
+You can create a skeleton project with the haumea-quickstart command
+```bash
+haumea-quickstart yourprojectname
+```
 
-### Documentation 
+```bash
+yourprojectname
+├── content		# All content for your website will live inside this directory
+│   └── (pages)
+├── layouts		# Stores .html templates files that specify how views of your content will be rendered.
+│   └── partials
+│   	└── footer.html
+│   	└── header.html
+│   	└── head.html
+│   └── _base.html
+├── public		# Your site will be rendered into this dir. Ready to be deployed to your web server.
+└── static		# Stores all the static content: images, CSS, JavaScript, etc. 
+
+```
+
+Build & test your website
+
+```bash
+cd yourprojectname/
+haumea serve
+```
+
+Or just build
+
+```bash
+cd yourprojectname/
+haumea build
+```
+
+## Documentation 
 
 #### Directory Structure (base)
 
