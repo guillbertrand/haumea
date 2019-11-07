@@ -6,7 +6,6 @@ import argparse
 import haumea
 import shutil
 
-
 _QUICKSTART_PATH = os.path.join(
     os.path.dirname(
         os.path.abspath(haumea.__file__)
