@@ -14,6 +14,7 @@ _QUICKSTART_PATH = os.path.join(
 )
 
 
+
 def haumea_parse_args():
     parser = argparse.ArgumentParser(description='Haumea Static Site Generator',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("yourprojectname", 
