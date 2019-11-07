@@ -1,4 +1,4 @@
-# haumea
+# haumea [![PyPI version](https://badge.fury.io/py/haumea.svg)](https://badge.fury.io/py/haumea)
 
 Small &amp; fast python library to build more sustainable websites... 
 Hybrid & agnostic, haumea is a static site generator (SSG) optimized for external JSON (REST API, GraphQL etc.) data driven contents. 
