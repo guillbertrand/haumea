@@ -11,7 +11,7 @@ entry_points = {
 }
 
 setuptools.setup(
-    name="haumea", 
+    name="haumea",
     version="0.4.6",
     author="Guillaume Betrand",
     author_email="gbe.io@pm.me",
@@ -30,4 +30,3 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
 )
-
