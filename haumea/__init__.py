@@ -175,7 +175,7 @@ class Page():
             output_filename = os.path.join(
                 output_path, self.basedirname, 'index.html')
         # slug with basename
-        elif(self.basename[0] != '_' and 'slug' not in self._params):
+        elif self.basename[0] != '_' and 'slug' not in self._params:
             output_filename = os.path.join(
                 output_path, self.basedirname, os.path.splitext(
                     self.basename)[0], "index.html")
@@ -188,7 +188,7 @@ class Page():
         return output_filename
 
     def load_data_from_json(self):
-        if(not self._json and "json-source" in self._params):
+        if not self._json and "json-source" in self._params:
             try:
                 ts = time.time()
 
@@ -212,9 +212,9 @@ class Page():
                 else:
                     res = requests.get(source, params=payload, headers=headers)
 
-                if(res.status_code == 200):
+                if res.status_code == 200:
                     fields_dict = json.loads(res.text)
-                    if(root_node):
+                    if root_node:
                         self._json = Haumea.get_data_from_json(
                             fields_dict, root_node)
                     else:
@@ -249,7 +249,7 @@ class Page():
 
     def get_menus(self):
         result = []
-        if('menus' in self._params):
+        if 'menus' in self._params:
             result = self._params['menus']
         return result
 
@@ -334,7 +334,7 @@ class Haumea:
             menu_items = menu.split(':')
             m = menu_items[0]
             weight = 0 if len(menu_items) != 2 else menu_items[1]
-            if(m in self.menus):
+            if m in self.menus:
                 self.menus[m].append([page, weight])
             else:
                 self.menus[m] = [[page, weight]]
@@ -361,11 +361,11 @@ class Haumea:
             for filename in files:
                 fn = os.path.join(root, filename)
                 # static page
-                if(os.path.splitext(filename)[1] == '.html' and filename[0] != '_'):
+                if os.path.splitext(filename)[1] == '.html' and filename[0] != '_':
                     page = Page(fn, self.layout_base)
                     self.add(page)
                 # page bundle
-                elif(os.path.splitext(filename)[1] == '.html' and filename[0] == '_'):
+                elif os.path.splitext(filename)[1] == '.html' and filename[0] == '_':
                     page_bundle = PageBundle(fn, self.layout_base).get_pages()
                     for page in page_bundle:
                         self.add(page)
@@ -450,15 +450,15 @@ def main():
     global output_path
     args = haumea_parse_args()
     action = args.action
-    if(args.output):
+    if args.output:
         output_path = os.path.join(working_dir, args.output)
 
     h = Haumea(args.verbosity)
 
-    if(action == "build"):
+    if action == "build":
         h.build()
 
-    if(action == "serve"):
+    if action == "serve":
         h.build()
         os.system(
             "python3 -m http.server --bind 127.0.0.1 --directory %s" %
