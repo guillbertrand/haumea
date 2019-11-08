@@ -5,10 +5,8 @@ import json
 import time
 import requests
 import logging
-import shutil 
+import shutil
 import argparse
-import posixpath
-import ssl
 
 try:
     __version__ = __import__('pkg_resources') \
@@ -17,6 +15,7 @@ except Exception:
     __version__ = "unknown"
 
 ##
+
 
 class Template():
     def __init__(self, content):
@@ -59,14 +58,16 @@ class Template():
                     assert len(words) == 2
                     ops.append(('menu', words[1]))
                 else:
-                    logging.warning("\U0000270B  Don't understand tag %r" % words)
+                    logging.warning(
+                        "\U0000270B  Don't understand tag %r" % words)
             else:
                 ops.append(('lit', tok))
 
         if ops_stack:
-            logging.error("\U0001F4A5  Unmatched action tag: %r" % ops_stack[-1][0])
+            logging.error("\U0001F4A5  Unmatched action tag: %r" %
+                          ops_stack[-1][0])
 
-        self.ops = ops   
+        self.ops = ops
 
     def render(self, context=None):
         engine = TemplateEngine(context)
@@ -74,6 +75,7 @@ class Template():
         return "".join(engine.result)
 
 ##
+
 
 class TemplateEngine():
     def __init__(self, context):
@@ -87,7 +89,7 @@ class TemplateEngine():
             elif op == 'exp':
                 try:
                     self.result.append(str(self.evaluate(args)))
-                except:
+                except BaseException:
                     exc_class, exc, _ = sys.exc_info()
                     new_exc = exc_class("Couldn't evaluate {{ %s }}: %s"
                                         % (args, exc))
@@ -103,13 +105,19 @@ class TemplateEngine():
                     self.context[var] = val
                     self.execute(body)
             elif op == 'include':
-                filename = os.path.join(layout_path, args.replace('"',''))
+                filename = os.path.join(layout_path, args.replace('"', ''))
                 tpl = Template(Haumea.get_file_contents(filename))
                 self.result.append(tpl.render(self.context))
             elif op == 'menu':
                 value = '<ul>'
                 for m in self.context['_menus'][args]:
-                    value += '<li {2}><a {2} href="{0}">{1}</a></li>'.format(m['page'].permalink, m['page']._params['nav_title'] if 'nav_title' in m['page']._params else m['page']._params['title'], 'class="active"' if m['is_active'] else '')
+                    if 'nav_title' in m['page']._params:
+                        t = m['page']._params['nav_title']
+                    else:
+                        t = m['page']._params['title']
+                    value += '<li {2}><a {2} href="{0}">{1}</a></li>'.format(
+                        m['page'].permalink, t,
+                        'class="active"' if m['is_active'] else '')
                 value += '</ul>'
                 self.result.append(value)
             else:
@@ -137,17 +145,19 @@ class TemplateEngine():
 
 ##
 
+
 class Page():
-    def __init__(self, filename, base_layout, json = {}):
+    def __init__(self, filename, base_layout, json={}):
         self._json = json
         self.input_filename = filename
-        self.basedirname = os.path.dirname(filename.replace(input_path,''))
+        self.basedirname = os.path.dirname(filename.replace(input_path, ''))
         self.basename = os.path.basename(filename)
-        self.params_pattern = r"---(.*)---\n?" 
+        self.params_pattern = r"---(.*)---\n?"
         self.base_layout = base_layout
 
         self.raw_contents = Haumea.get_file_contents(self.input_filename)
-        self.final_contents = re.sub(self.params_pattern, '', self.raw_contents, 0, re.DOTALL)
+        self.final_contents = re.sub(
+            self.params_pattern, '', self.raw_contents, 0, re.DOTALL)
 
         self._params = self.get_params()
 
@@ -155,27 +165,33 @@ class Page():
         self.render_params()
 
         self.output_filename = self.get_output_filename()
-        self.output_dirname = os.path.dirname(self.output_filename) 
-        self.permalink =  self.output_filename.replace(output_path, '/').replace('index.html', '')
+        self.output_dirname = os.path.dirname(self.output_filename)
+        self.permalink = self.output_filename.replace(
+            output_path, '/').replace('index.html', '')
 
     def get_output_filename(self):
         # index.html
-        if(self.basename == 'index.html'):
-            output_filename = os.path.join(output_path, self.basedirname,'index.html')
+        if self.basename == 'index.html':
+            output_filename = os.path.join(
+                output_path, self.basedirname, 'index.html')
         # slug with basename
         elif(self.basename[0] != '_' and 'slug' not in self._params):
-            output_filename = os.path.join(output_path, self.basedirname, os.path.splitext(self.basename)[0], "index.html")
+            output_filename = os.path.join(
+                output_path, self.basedirname, os.path.splitext(
+                    self.basename)[0], "index.html")
         # slug with params
         else:
-            slug = str(self._params['slug']).replace('/', '').replace(' ', '-') # TODO slugify
-            output_filename = os.path.join(output_path, self.basedirname, slug, "index.html") 
+            slug = str(self._params['slug']).replace(
+                '/', '').replace(' ', '-')  # TODO slugify
+            output_filename = os.path.join(
+                output_path, self.basedirname, slug, "index.html")
         return output_filename
-    
+
     def load_data_from_json(self):
         if(not self._json and "json-source" in self._params):
             try:
                 ts = time.time()
- 
+
                 source = self._params['json-source']
                 payload = self._params['json-params'] if 'json-params' in self._params else ''
                 headers = self._params['json-headers'] if 'json-headers' in self._params else ''
@@ -183,33 +199,40 @@ class Page():
                 req_type = self._params['json-request-type'] if 'json-request-type' in self._params else 'get'
 
                 if req_type == 'graphql':
-                    gql_file = os.path.splitext(self.input_filename)[0]+'.graphql'
+                    gql_file = os.path.splitext(self.input_filename)[
+                        0] + '.graphql'
                     if os.path.exists(gql_file):
-                        logging.debug('GraphQL file find {:s}'.format(gql_file))
+                        logging.debug(
+                            'GraphQL file find {:s}'.format(gql_file))
                         payload = {'query': Haumea.get_file_contents(gql_file)}
                         req_type = 'post'
-                
+
                 if req_type == 'post':
-                    res = requests.post(source, json= payload, headers=headers)
+                    res = requests.post(source, json=payload, headers=headers)
                 else:
-                    res = requests.get(source, params= payload, headers=headers)
+                    res = requests.get(source, params=payload, headers=headers)
 
                 if(res.status_code == 200):
                     fields_dict = json.loads(res.text)
                     if(root_node):
-                        self._json = Haumea.get_data_from_json(fields_dict, root_node)
+                        self._json = Haumea.get_data_from_json(
+                            fields_dict, root_node)
                     else:
-                        self._json = fields_dict 
+                        self._json = fields_dict
                     te = time.time()
-                    logging.info('Load json \U0001F52D  - {:s} request - {:2.2f}ms : {:.80}...'.format(req_type, (te-ts)*1000, source))
+                    logging.info(
+                        'Load json \U0001F52D  - {:s} request -'
+                        ' {:2.2f}ms : {:.80}...'.format(req_type, (te - ts) * 1000, source))
                     logging.debug('{:s}'.format(res.text))
-            except:
-                logging.error('\U0001F4A5  Unable to load json file {:.80}'.format(source))
+            except BaseException:
+                logging.error(
+                    '\U0001F4A5  Unable to load json file {:.80}'.format(source))
 
     def get_params(self):
         result = {}
-        matches = re.finditer(self.params_pattern, self.raw_contents, re.DOTALL)
-        for matchNum, match in enumerate(matches, start=1):    
+        matches = re.finditer(self.params_pattern,
+                              self.raw_contents, re.DOTALL)
+        for matchNum, match in enumerate(matches, start=1):
             yml = match.group(1)
             result = json.loads(yml)
         return result
@@ -217,11 +240,11 @@ class Page():
     def render_params(self):
         if "json-source" in self._params:
             for p_key, p_value in self._params.items():
-                if isinstance(p_value,str) and p_value.startswith('{{'):
+                if isinstance(p_value, str) and p_value.startswith('{{'):
                     try:
-                        tpl  = Template(p_value)
-                        self._params[p_key] = tpl.render({'_json':self._json})
-                    except:
+                        tpl = Template(p_value)
+                        self._params[p_key] = tpl.render({'_json': self._json})
+                    except BaseException:
                         pass
 
     def get_menus(self):
@@ -236,12 +259,12 @@ class Page():
             amenus[k] = []
             for i in m:
                 active = (i[0].permalink == self.permalink)
-                amenus[k].append({'page':i[0], 'is_active':active})
+                amenus[k].append({'page': i[0], 'is_active': active})
 
         data = {
-            '_menus' : amenus,
-            '_json' : self._json,
-            '_params' : self._params
+            '_menus': amenus,
+            '_json': self._json,
+            '_params': self._params
         }
         content = Template(self.final_contents).render(data)
 
@@ -250,40 +273,44 @@ class Page():
 
 #
 
+
 class PageBundle(Page):
     def __init__(self, path, base_layout):
         Page.__init__(self, path, base_layout)
-            
+
     def get_pages(self):
         pages = []
         for i in self._json:
             page = Page(self.input_filename, self.base_layout, i)
             pages.append(page)
-        return pages 
+        return pages
 
 ##
 
+
 class Haumea:
 
-    def __init__(self, logging_level = logging.INFO):
+    def __init__(self, logging_level=logging.INFO):
         self.logging_level = logging_level
         self.menus = {}
         self.pages = []
-        self.layout_base = Haumea.get_file_contents(os.path.join(layout_path, '_base.html'))
+        self.layout_base = Haumea.get_file_contents(
+            os.path.join(layout_path, '_base.html'))
 
     @staticmethod
     def get_file_contents(filename):
         contents = ''
         try:
-            f=open(filename, "r")
+            f = open(filename, "r")
             if f.mode == 'r':
                 contents = f.read()
             f.close()
-        except:
-            logging.error('\U0001F4A5  Unable to load file {:.80}'.format(filename))
+        except BaseException:
+            logging.error(
+                '\U0001F4A5  Unable to load file {:.80}'.format(filename))
         return contents
 
-    @staticmethod 
+    @staticmethod
     def get_data_from_json(json_data, json_path):
         res = ''
         basenode = ''
@@ -292,13 +319,13 @@ class Haumea:
             arr = ''
             for m in matches:
                 arr += ('[%s]' % m[1])
-                key = key.replace(m[0],'')
+                key = key.replace(m[0], '')
             basenode += '["%s"]' % key
-            basenode = basenode+arr if arr else basenode
-        try:      
-            res = eval("json_data%s" % basenode)   
-        except:
-            pass  
+            basenode = basenode + arr if arr else basenode
+        try:
+            res = eval("json_data%s" % basenode)
+        except BaseException:
+            pass
         return res
 
     def add(self, page):
@@ -314,17 +341,18 @@ class Haumea:
 
         # sort menus
         for key, menu in self.menus.items():
-            self.menus[key] = sorted(menu, key = lambda val: int(val[1]))
+            self.menus[key] = sorted(menu, key=lambda val: int(val[1]))
 
         # add pages
         self.pages.append(page)
-    
+
     def build(self):
 
         FORMAT = '* %(levelname)s - %(message)s'
-        logging.basicConfig(level=self.logging_level,format=FORMAT)
+        logging.basicConfig(level=self.logging_level, format=FORMAT)
         logger = logging.getLogger('Haumea')
-        logger.info('\U0001F680  Haumea %s - Start build \U0001F680' % __version__)
+        logger.info('\U0001F680  Haumea %s - Start build \U0001F680' %
+                    __version__)
 
         # scan dir
         for root, subdirs, files in os.walk(input_path):
@@ -346,14 +374,15 @@ class Haumea:
         try:
             shutil.rmtree(output_path)
             logger.info('Clean output path : %s' % output_path)
-        except:
+        except BaseException:
             logger.warning('Unable to clean output path : %s' % output_path)
 
         # copy static assets
         try:
-            shutil.copytree(static_path, os.path.join(output_path, static_path.replace(static_path,'')))
+            shutil.copytree(static_path, os.path.join(
+                output_path, static_path.replace(static_path, '')))
             logger.info('Copy static directory : %s' % static_path)
-        except:
+        except BaseException:
             logger.warning('Unable to copy static assets : %s' % static_path)
 
         ts = time.time()
@@ -361,23 +390,29 @@ class Haumea:
         for page in self.pages:
             if not os.path.exists(page.output_dirname):
                 os.makedirs(page.output_dirname)
-            f=open(page.output_filename, "w")
+            f = open(page.output_filename, "w")
             f.write(page.render(self.menus))
             f.close()
-            logger.info('\U00002728  Render page \U0001F527  %s' % (page.output_filename.replace(working_dir,'')))
-        
+            logger.info('\U00002728  Render page \U0001F527  %s' %
+                        (page.output_filename.replace(working_dir, '')))
+
         te = time.time()
         nb = len(self.pages)
         tt = (te - ts) * 1000
         me = tt / nb
-        logger.info('\U0001F331  %d pages built in %2.2f ms (%2.2fms/pp) \U0001F30D ' % (nb,tt, me))
+        logger.info(
+            '\U0001F331  %d pages built in %2.2f ms (%2.2fms/pp) \U0001F30D ' %
+            (nb, tt, me))
 
 #
 
+
 def haumea_parse_args():
-    parser = argparse.ArgumentParser(description='Haumea Static Site Generator',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("action", 
-                        default = "build",
+    parser = argparse.ArgumentParser(
+        description='Haumea Static Site Generator',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("action",
+                        default="build",
                         help="Action : build, serve")
     parser.add_argument('-p', '--port', default=8000, type=int, nargs="?",
                         help="Port to Listen On")
@@ -393,11 +428,16 @@ def haumea_parse_args():
                         default=logging.INFO,
                         const=logging.CRITICAL, dest='verbosity',
                         help='Show only critical errors.')
-    parser.add_argument('-v','--version', action='version', version=__version__,
-                        help='Print the version')
+    parser.add_argument(
+        '-v',
+        '--version',
+        action='version',
+        version=__version__,
+        help='Print the version')
     return parser.parse_args()
 
 #
+
 
 working_dir = os.getcwd()
 input_path = os.path.join(working_dir, 'content/')
@@ -405,10 +445,11 @@ output_path = os.path.join(working_dir, 'public/')
 layout_path = os.path.join(working_dir, 'layouts/')
 static_path = os.path.join(working_dir, 'static/')
 
+
 def main():
     global output_path
     args = haumea_parse_args()
-    action = args.action 
+    action = args.action
     if(args.output):
         output_path = os.path.join(working_dir, args.output)
 
@@ -419,8 +460,6 @@ def main():
 
     if(action == "serve"):
         h.build()
-        os.system("python3 -m http.server --bind 127.0.0.1 --directory %s" % output_path)
-
-
-
-
+        os.system(
+            "python3 -m http.server --bind 127.0.0.1 --directory %s" %
+            output_path)
