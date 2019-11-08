@@ -1,21 +1,24 @@
 # haumea [![PyPI version](https://badge.fury.io/py/haumea.svg)](https://badge.fury.io/py/haumea)
 
-Small &amp; fast python library to build more sustainable websites... 
-Hybrid & agnostic, haumea is a static site generator (SSG) optimized for external JSON (REST API, GraphQL etc.) data driven contents. 
+Small &amp; fast python library to build more sustainable websites...
+Hybrid & agnostic, haumea is a basic static site generator (SSG) optimized for external JSON (REST API, GraphQL etc.) data driven contents.
 
 Work in progress...
+
+Haumea requires **Python >=3.6**
 
 ## Installation
 
 ```bash
-pip install haumea
+$ pip install haumea
 ```
 
 ## Quickstart
 
 You can create a skeleton project with the haumea-quickstart command
+
 ```bash
-haumea-quickstart yourprojectname
+$ haumea-quickstart yourprojectname
 ```
 
 ```bash
@@ -29,31 +32,31 @@ yourprojectname
 │   	└── head.html
 │   └── _base.html
 ├── public		# Your site will be rendered into this dir
-└── static		# Stores all the static content: images, CSS, JavaScript, etc. 
+└── static		# Stores all the static content: images, CSS, JavaScript, etc.
 
 ```
 
 Build & test your website
 
 ```bash
-cd yourprojectname/
-haumea serve
+$ cd yourprojectname/
+$ haumea serve
 ```
 
 Or just build
 
 ```bash
-cd yourprojectname/
-haumea build
+$ cd yourprojectname/
+$ haumea build
 ```
 
-## Documentation 
+## Documentation
 
 ### Directory Structure (sample)
 
 ```bash
 yourprojectname
-├── content		
+├── content
 │   └── index.html			# Simple page
 │   └── about.html			# Simple page
 │   	└── blog             		# Subdir
@@ -63,14 +66,14 @@ yourprojectname
 │   └── products/        		# Subdir
 │	    └── _product.html 		# Page bundle (create from a json array of data)
 │	    └── _product.graphql	# graphql query (for json-request-type="graphql")
-├── layouts		
+├── layouts
 │   └── partials
 │   	└── footer.html
 │   	└── header.html
 │   	└── head.html
 │   └── _base.html
-├── public		
-└── static		
+├── public
+└── static
 ```
 
 ### Templating tags (layouts dir)
@@ -102,12 +105,12 @@ yourprojectname
 {{ image media_1 jpg 600x q60 }}
 ```
 
-### Content config 
-
+### Content config
 
 #### Static page
 
 **page.html**
+
 ```bash
 ---
 {
@@ -122,13 +125,14 @@ yourprojectname
 #### Single page from JSON or REST API
 
 **page.html**
+
 ```bash
 ---
 {
 	"json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/",
 	"json-request-type" : "get",
 	"json-params" : { "locale" : "fr" , "auth_token" : "XXXXXXX" },
-	"json-root-node" : "data", 
+	"json-root-node" : "data",
 
 	"title" : "{{ _json.fields.title }} - {{ _json.fields.product_qty }}",
 	"menus" : [ "main" ],
@@ -139,14 +143,15 @@ yourprojectname
 
 #### Page bundle from JSON with GraphQL
 
-**_page.html**
+**\_page.html**
+
 ```bash
 ---
 {
 	"json-source" : "https://graphql.datocms.com/",
 	"json-request-type" : "graphql",
 	"json-headers" : {"Authorization":"token xxxxxxx"},
-	"json-root-node" : "data.allProduits", 
+	"json-root-node" : "data.allProduits",
 
 	"title": "_title",
 	"meta-desc" : "{{ _json.meta_description }}",
@@ -158,20 +163,21 @@ yourprojectname
 ---
 ```
 
-**_page.graphql**
+**\_page.graphql**
+
 ```bash
 ---
 query {
-	launchesPast(limit: 80) { 
-		mission_name 
+	launchesPast(limit: 80) {
+		mission_name
 		details
-		launch_date_local 
-		rocket { 
-			rocket_name 
-		} 
-		ships { 
-			name 
-			image 
+		launch_date_local
+		rocket {
+			rocket_name
+		}
+		ships {
+			name
+			image
 		}
 	}
 }
