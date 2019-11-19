@@ -40,6 +40,9 @@ def main():
             logger.info(
                 'Create content layouts "%s/layouts/"' %
                 args.yourprojectname)
+            logger.info(
+                'Create content layouts "%s/static/"' %
+                args.yourprojectname)
             logger.info('Add sample files...')
             logger.info('\U0001F331  Yeah ! your project is ready \U0001F331')
             logger.info(
