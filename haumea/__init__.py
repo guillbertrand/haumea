@@ -7,6 +7,10 @@ import requests
 import logging
 import shutil
 import argparse
+import threading
+
+from watchdog.observers import Observer
+from watchdog.events import PatternMatchingEventHandler
 
 try:
     __version__ = __import__('pkg_resources') \
@@ -275,8 +279,8 @@ class Page():
 
 
 class PageBundle(Page):
-    def __init__(self, path, base_layout):
-        Page.__init__(self, path, base_layout)
+    def __init__(self, path, base_layout, json={}):
+        Page.__init__(self, path, base_layout, json)
 
     def get_pages(self):
         pages = []
@@ -288,14 +292,37 @@ class PageBundle(Page):
 ##
 
 
+def watch(target):
+
+    class UpdaterHandler(PatternMatchingEventHandler):
+        def on_any_event(self, event):
+            target.build(True)
+
+    event_handler = UpdaterHandler()
+    observer = Observer()
+    observer.schedule(event_handler, layout_path, recursive=True)
+    observer.schedule(event_handler, input_path, recursive=True)
+    observer.schedule(event_handler, static_path, recursive=True)
+    observer.start()
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()
+
+##
+
+
 class Haumea:
 
     def __init__(self, logging_level=logging.INFO):
         self.logging_level = logging_level
         self.menus = {}
+        self.cache = {}
         self.pages = []
-        self.layout_base = Haumea.get_file_contents(
-            os.path.join(layout_path, '_base.html'))
+        self.layout_base = ''
 
     @staticmethod
     def get_file_contents(filename):
@@ -328,7 +355,12 @@ class Haumea:
             pass
         return res
 
+    def add_to_cache(self, page):
+        if "json-source" in page._params:
+            self.cache[page.input_filename] = page._json
+
     def add(self, page):
+
         # add menus
         for menu in page.get_menus():
             menu_items = menu.split(':')
@@ -346,7 +378,11 @@ class Haumea:
         # add pages
         self.pages.append(page)
 
-    def build(self):
+    def build(self, with_cache=False):
+        self.menus = {}
+        self.pages = []
+        self.layout_base = Haumea.get_file_contents(
+            os.path.join(layout_path, '_base.html'))
 
         FORMAT = '* %(levelname)s - %(message)s'
         logging.basicConfig(level=self.logging_level, format=FORMAT)
@@ -360,14 +396,17 @@ class Haumea:
             # file
             for filename in files:
                 fn = os.path.join(root, filename)
+                json = self.cache[fn] if with_cache and fn in self.cache else {}
                 # static page
                 if os.path.splitext(filename)[1] == '.html' and filename[0] != '_':
-                    page = Page(fn, self.layout_base)
+                    page = Page(fn, self.layout_base, json)
                     self.add(page)
+                    self.add_to_cache(page)
                 # page bundle
                 elif os.path.splitext(filename)[1] == '.html' and filename[0] == '_':
-                    page_bundle = PageBundle(fn, self.layout_base).get_pages()
-                    for page in page_bundle:
+                    page_bundle = PageBundle(fn, self.layout_base, json)
+                    self.add_to_cache(page_bundle)
+                    for page in page_bundle.get_pages():
                         self.add(page)
 
         # clean output path
@@ -459,7 +498,13 @@ def main():
         h.build()
 
     if action == "serve":
+        def task1():
+            os.system("python3 -m http.server --bind 127.0.0.1 --directory %s" % output_path)
+
+        def task2():
+            watch(h)
+        t1 = threading.Thread(target=task1)
+        t2 = threading.Thread(target=task2)
         h.build()
-        os.system(
-            "python3 -m http.server --bind 127.0.0.1 --directory %s" %
-            output_path)
+        t1.start()
+        t2.start()

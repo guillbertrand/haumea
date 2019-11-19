@@ -101,8 +101,6 @@ yourprojectname
 {{ title }}
 {{ fields.short_title }}
 {{ fields.regular_price|{:.2f} }}
-
-{{ image media_1 jpg 600x q60 }}
 ```
 
 ### Content config
@@ -115,8 +113,6 @@ yourprojectname
 ---
 {
 	"title":"Welcome home",
-	"nav_title":"Home",
-	"description":"A nice description...",
 	"menus":["main", "footer"]
 }
 ---
@@ -153,7 +149,8 @@ yourprojectname
 	"json-headers" : {"Authorization":"token xxxxxxx"},
 	"json-root-node" : "data.allProduits",
 
-	"title": "_title",
+	"title": "{{ _json.title }}",
+	"nav-title": "Navigation Title !",
 	"meta-desc" : "{{ _json.meta_description }}",
 	"meta-title" : "{{ _json.meta_title }}",
 	"slug" : "{{ _json.slug }}",
@@ -172,9 +169,6 @@ query {
 		mission_name
 		details
 		launch_date_local
-		rocket {
-			rocket_name
-		}
 		ships {
 			name
 			image
