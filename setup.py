@@ -12,7 +12,7 @@ entry_points = {
 
 setuptools.setup(
     name="haumea",
-    version="0.4.9",
+    version="0.5.0",
     author="Guillaume Betrand",
     author_email="gbe.io@pm.me",
     description="Small & fast python library to build static websites",
