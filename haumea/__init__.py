@@ -300,9 +300,12 @@ def watch(target):
 
     event_handler = UpdaterHandler()
     observer = Observer()
-    observer.schedule(event_handler, layout_path, recursive=True)
-    observer.schedule(event_handler, input_path, recursive=True)
-    observer.schedule(event_handler, static_path, recursive=True)
+    if os.path.exists(layout_path):
+        observer.schedule(event_handler, layout_path, recursive=True)
+    if os.path.exists(input_path):
+        observer.schedule(event_handler, input_path, recursive=True)
+    if os.path.exists(static_path):
+        observer.schedule(event_handler, static_path, recursive=True)
     observer.start()
 
     try:
