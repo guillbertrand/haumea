@@ -1,7 +1,6 @@
 # haumea [![PyPI version](https://badge.fury.io/py/haumea.svg)](https://badge.fury.io/py/haumea)
 
-Small &amp; fast python library to build more sustainable websites...
-Hybrid & agnostic, haumea is a basic static site generator (SSG) optimized for external JSON (REST API, GraphQL etc.) data driven contents.
+Small &amp; fast python static site generator (SSG) optimized for external JSON (REST API, GraphQL etc.) data driven contents.
 
 Work in progress...
 
@@ -79,7 +78,7 @@ yourprojectname
 ### Templating tags (layouts dir)
 
 ```bash
-{{ _content }} 				# render your content into template
+{{ _content }} 							# render your content into template
 ```
 
 ```bash
@@ -87,7 +86,11 @@ yourprojectname
 ```
 
 ```bash
-{% menu main %}				# basic render of menu
+{% menu main %}							# basic render of menu
+```
+
+```bash
+{% time %}								# basic render of current timestamp
 ```
 
 ```bash
@@ -112,8 +115,8 @@ yourprojectname
 ```bash
 ---
 {
-	"title":"Welcome home",
-	"menus":["main", "footer"]
+    "title":"Welcome home",
+    "menus":["main", "footer"]
 }
 ---
 ```
@@ -125,14 +128,14 @@ yourprojectname
 ```bash
 ---
 {
-	"json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/",
-	"json-request-type" : "get",
-	"json-params" : { "locale" : "fr" , "auth_token" : "XXXXXXX" },
-	"json-root-node" : "data",
+    "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/",
+    "json-request-type" : "get",
+    "json-params" : { "locale" : "fr" , "auth_token" : "XXXXXXX" },
+    "json-root-node" : "data",
 
-	"title" : "{{ _json.fields.title }} - {{ _json.fields.product_qty }}",
-	"menus" : [ "main" ],
-	"slug" : "test"
+    "title" : "{{ _json.fields.title }} - {{ _json.fields.product_qty }}",
+    "menus" : [ "main" ],
+    "slug" : "test"
 }
 ---
 ```
@@ -144,18 +147,18 @@ yourprojectname
 ```bash
 ---
 {
-	"json-source" : "https://graphql.datocms.com/",
-	"json-request-type" : "graphql",
-	"json-headers" : {"Authorization":"token xxxxxxx"},
-	"json-root-node" : "data.allProduits",
+    "json-source" : "https://graphql.datocms.com/",
+    "json-request-type" : "graphql",
+    "json-headers" : {"Authorization":"token xxxxxxx"},
+    "json-root-node" : "data.allProduits",
 
-	"title": "{{ _json.title }}",
-	"nav-title": "Navigation Title !",
-	"meta-desc" : "{{ _json.meta_description }}",
-	"meta-title" : "{{ _json.meta_title }}",
-	"slug" : "{{ _json.slug }}",
+    "title": "{{ _json.title }}",
+    "nav-title": "Navigation Title !",
+    "meta-desc" : "{{ _json.meta_description }}",
+    "meta-title" : "{{ _json.meta_title }}",
+    "slug" : "{{ _json.slug }}",
 
-	"menus" : [ "products", "footer" ]
+    "menus" : [ "products", "footer" ]
 }
 ---
 ```
@@ -165,15 +168,15 @@ yourprojectname
 ```bash
 ---
 query {
-	launchesPast(limit: 80) {
-		mission_name
-		details
-		launch_date_local
-		ships {
-			name
-			image
-		}
-	}
+    launchesPast(limit: 80) {
+        mission_name
+        details
+        launch_date_local
+        ships {
+            name
+            image
+        }
+    }
 }
 ---
 ```

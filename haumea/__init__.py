@@ -61,6 +61,9 @@ class Template():
                 elif words[0].startswith('menu'):
                     assert len(words) == 2
                     ops.append(('menu', words[1]))
+                elif words[0].startswith('time'):
+                    assert len(words) == 1
+                    ops.append(('time', words[0]))
                 else:
                     logging.warning(
                         "\U0000270B  Don't understand tag %r" % words)
@@ -124,6 +127,8 @@ class TemplateEngine():
                         'class="active"' if m['is_active'] else '')
                 value += '</ul>'
                 self.result.append(value)
+            elif op == 'time':
+                self.result.append(str(time.time()))
             else:
                 logging.warning("Template engine error with op %r" % op)
 
@@ -170,8 +175,7 @@ class Page():
 
         self.output_filename = self.get_output_filename()
         self.output_dirname = os.path.dirname(self.output_filename)
-        self.permalink = self.output_filename.replace(
-            output_path, '/').replace('index.html', '')
+        self.permalink = self.output_filename.replace(output_path, '/').replace('index.html', '')
 
     def get_output_filename(self):
         # index.html
@@ -181,14 +185,12 @@ class Page():
         # slug with basename
         elif self.basename[0] != '_' and 'slug' not in self._params:
             output_filename = os.path.join(
-                output_path, self.basedirname, os.path.splitext(
-                    self.basename)[0], "index.html")
+                output_path, self.basedirname, os.path.splitext(self.basename)[0], "index.html")
         # slug with params
         else:
             slug = str(self._params['slug']).replace(
                 '/', '').replace(' ', '-')  # TODO slugify
-            output_filename = os.path.join(
-                output_path, self.basedirname, slug, "index.html")
+            output_filename = os.path.join(output_path, self.basedirname, slug, "index.html")
         return output_filename
 
     def load_data_from_json(self):
@@ -229,8 +231,7 @@ class Page():
                         ' {:2.2f}ms : {:.80}...'.format(req_type, (te - ts) * 1000, source))
                     logging.debug('{:s}'.format(res.text))
             except BaseException:
-                logging.error(
-                    '\U0001F4A5  Unable to load json file {:.80}'.format(source))
+                logging.error('\U0001F4A5  Unable to load json file {:.80}'.format(source))
 
     def get_params(self):
         result = {}
@@ -296,16 +297,18 @@ def watch(target):
 
     class UpdaterHandler(PatternMatchingEventHandler):
         def on_any_event(self, event):
-            target.build(True)
+            try:
+                target.build(True)
+            except BaseException:
+                logging.error(
+                    '\U0001F4A5  Unable to build the site !')
 
+    paths = [layout_path, input_path, static_path]
     event_handler = UpdaterHandler()
     observer = Observer()
-    if os.path.exists(layout_path):
-        observer.schedule(event_handler, layout_path, recursive=True)
-    if os.path.exists(input_path):
-        observer.schedule(event_handler, input_path, recursive=True)
-    if os.path.exists(static_path):
-        observer.schedule(event_handler, static_path, recursive=True)
+    for p in paths:
+        if os.path.exists(layout_path):
+            observer.schedule(event_handler, p, recursive=True)
     observer.start()
 
     try:
@@ -320,8 +323,7 @@ def watch(target):
 
 class Haumea:
 
-    def __init__(self, logging_level=logging.INFO):
-        self.logging_level = logging_level
+    def __init__(self):
         self.menus = {}
         self.cache = {}
         self.pages = []
@@ -387,11 +389,7 @@ class Haumea:
         self.layout_base = Haumea.get_file_contents(
             os.path.join(layout_path, '_base.html'))
 
-        FORMAT = '* %(levelname)s - %(message)s'
-        logging.basicConfig(level=self.logging_level, format=FORMAT)
-        logger = logging.getLogger('Haumea')
-        logger.info('\U0001F680  Haumea %s - Start build \U0001F680' %
-                    __version__)
+        logging.info('\U0001F680  Haumea %s - Start build \U0001F680' % __version__)
 
         # scan dir
         for root, subdirs, files in os.walk(input_path):
@@ -415,17 +413,17 @@ class Haumea:
         # clean output path
         try:
             shutil.rmtree(output_path)
-            logger.info('Clean output path : %s' % output_path)
+            logging.info('Clean output path : %s' % output_path)
         except BaseException:
-            logger.warning('Unable to clean output path : %s' % output_path)
+            logging.warning('Unable to clean output path : %s' % output_path)
 
         # copy static assets
         try:
             shutil.copytree(static_path, os.path.join(
                 output_path, static_path.replace(static_path, '')))
-            logger.info('Copy static directory : %s' % static_path)
+            logging.info('Copy static directory : %s' % static_path)
         except BaseException:
-            logger.warning('Unable to copy static assets : %s' % static_path)
+            logging.warning('Unable to copy static assets : %s' % static_path)
 
         ts = time.time()
         # write files
@@ -435,16 +433,14 @@ class Haumea:
             f = open(page.output_filename, "w")
             f.write(page.render(self.menus))
             f.close()
-            logger.info('\U00002728  Render page \U0001F527  %s' %
-                        (page.output_filename.replace(working_dir, '')))
+            logging.info('\U00002728  Render page \U0001F527  %s' % (page.output_filename.replace(working_dir, '')))
 
         te = time.time()
         nb = len(self.pages)
         tt = (te - ts) * 1000
         me = tt / nb
-        logger.info(
-            '\U0001F331  %d pages built in %2.2f ms (%2.2fms/pp) \U0001F30D ' %
-            (nb, tt, me))
+        logging.info(
+            '\U0001F331  %d pages built in %2.2f ms (%2.2fms/pp) \U0001F30D ' % (nb, tt, me))
 
 #
 
@@ -495,9 +491,12 @@ def main():
     if args.output:
         output_path = os.path.join(working_dir, args.output)
 
-    h = Haumea(args.verbosity)
+    h = Haumea()
 
-    if action == "build":
+    FORMAT = '* %(levelname)s - %(message)s'
+    logging.basicConfig(level=args.verbosity, format=FORMAT)
+
+    if action == "build":    
         h.build()
 
     if action == "serve":
