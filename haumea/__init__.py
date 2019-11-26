@@ -9,6 +9,12 @@ import shutil
 import argparse
 import threading
 
+'''
+from http.server import HTTPServer, SimpleHTTPRequestHandler
+from socketserver import BaseServer
+import ssl
+'''
+
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
@@ -39,8 +45,8 @@ class Template():
                 if words[0] == 'if':
                     # If: ('if', (expr, body_ops))
                     if_ops = []
-                    assert len(words) == 2
-                    ops.append(('if', (words[1], if_ops)))
+                    assert len(words) == 2 or len(words) == 4
+                    ops.append(('if', (words, if_ops)))
                     ops_stack.append(ops)
                     ops = if_ops
                 elif words[0] == 'include':
@@ -59,8 +65,8 @@ class Template():
                     ops = ops_stack.pop()
                     assert ops[-1][0] == words[0][3:]
                 elif words[0].startswith('menu'):
-                    assert len(words) == 2
-                    ops.append(('menu', words[1]))
+                    assert len(words) == 2 or len(words) == 3
+                    ops.append(('menu', words))
                 elif words[0].startswith('time'):
                     assert len(words) == 1
                     ops.append(('time', words[0]))
@@ -103,8 +109,13 @@ class TemplateEngine():
                     raise new_exc
             elif op == 'if':
                 expr, body = args
-                if self.evaluate(expr):
-                    self.execute(body)
+                if self.evaluate(expr[1]):
+                    if len(expr) == 2:
+                        self.execute(body)
+                    elif len(expr) == 4:
+                        res = eval('("%s" %s %s)' % (self.evaluate(expr[1]), expr[2], expr[3]))
+                        if res:
+                            self.execute(body)
             elif op == 'for':
                 var, lis, body = args
                 vals = self.evaluate(lis)
@@ -116,16 +127,32 @@ class TemplateEngine():
                 tpl = Template(Haumea.get_file_contents(filename))
                 self.result.append(tpl.render(self.context))
             elif op == 'menu':
-                value = '<ul>'
-                for m in self.context['_menus'][args]:
-                    if 'nav_title' in m['page']._params:
-                        t = m['page']._params['nav_title']
-                    else:
-                        t = m['page']._params['title']
-                    value += '<li {2}><a {2} href="{0}">{1}</a></li>'.format(
-                        m['page'].permalink, t,
-                        'class="active"' if m['is_active'] else '')
-                value += '</ul>'
+                value = ''
+                node = {0: ['a', '', ''], 1: ['li', '', ''], 2: ['ul', '', '']}
+                params = reversed(args[2].split('>')) if len(args) == 3 else []
+                if(params):
+                    node = {0: ['']*3, 1: ['']*3, 2: ['']*3}
+                    for i, mp in enumerate(params):
+                        for ii, val in enumerate(mp.split('.')):
+                            node[i][ii] = val
+                ##
+                if node[2][0]:
+                    value += '<%s class="%s">' % (node[2][0], node[2][1])
+                for m in self.context['_menus'][args[1]]:
+                    title = m['page']._params['nav_title'] if 'nav_title' in m['page']._params else m['page']._params['title']
+                    if node[1][0]:
+                        value += '<%s class="%s">' % (node[1][0], node[1][1])
+                    value += '<{0} class="{1} {2}" href="{3}">{4}</{0}>'.format(
+                            node[0][0],
+                            node[0][1],
+                            node[0][2] if m['is_active'] else '',
+                            m['page'].permalink,
+                            title)
+                    if node[1][0]:
+                        value += '</%s>' % (node[1][0])
+                if node[0][0]:
+                    value += '</%s>' % (node[0][0])
+                ##
                 self.result.append(value)
             elif op == 'time':
                 self.result.append(str(time.time()))
@@ -293,6 +320,20 @@ class PageBundle(Page):
 ##
 
 
+def serve(port=8000):
+    os.system("python3 -m http.server --bind 127.0.0.1 --directory %s" % output_path)
+    '''
+    os.chdir(output_path)
+    httpd = HTTPServer(('localhost', port), SimpleHTTPRequestHandler)
+    #httpd.socket = ssl.wrap_socket(httpd.socket, certfile='certificate.pem', server_side=True)
+    logging.info("Serving at port %d" % port)
+    logging.info("http://localhost:%d" % port)
+    httpd.serve_forever()
+    '''
+
+##
+
+
 def watch(target):
 
     class UpdaterHandler(PatternMatchingEventHandler):
@@ -416,6 +457,8 @@ class Haumea:
             logging.info('Clean output path : %s' % output_path)
         except BaseException:
             logging.warning('Unable to clean output path : %s' % output_path)
+            tb = sys.exc_info()[2]
+            logging.debug(BaseException.with_traceback(tb))
 
         # copy static assets
         try:
@@ -501,7 +544,7 @@ def main():
 
     if action == "serve":
         def task1():
-            os.system("python3 -m http.server --bind 127.0.0.1 --directory %s" % output_path)
+            serve(args.port)
 
         def task2():
             watch(h)

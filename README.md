@@ -78,32 +78,57 @@ yourprojectname
 ### Templating tags (layouts dir)
 
 ```bash
-{{ _content }} 							# render your content into template
-```
+# render your content into template
+{{ _content }} 	
 
-```bash
-{% include "partials/header.html" %}	# basic template include
-```
+# basic template include
+{% include "partials/header.html" %}	
 
-```bash
-{% menu main %}							# basic render of menu
-```
+# basic render of menu
+{% menu mymainmenu %}	
 
-```bash
-{% time %}								# basic render of current timestamp
-```
+    # html output
+    <ul>
+        <li><a href="">item 1</a></li>
+        <li><a href="">item 1</a></li>
+        <li><a href="">item 1</a></li>
+    </ul>
 
-```bash
+# advanced render of menu
+{% menu myfootermenu a.item %}
+
+    # html output
+    <a class="item" href="">item 1</a>
+    <a class="item" href="">item 1</a>
+    <a class="item" href="">item 1</a>
+
+# advanced render of menu
+{% menu mycustommenu nav.menu>div.item>a.link.is-active %}
+
+    # html output
+    <nav class="menu">
+        <div class="item">
+            <a class="link is-active" href="">item 1</a>
+        </div>
+        <div class="item">
+            <a class="link" href="">item 1</a>
+        </div>
+        <div class="item">
+            <a class="link" href="">item 1</a>
+        </div>
+    </nav>
+
 # custom render of menu
 {% for menu in _menus.main %}
     <li><a href="{{ menu.page.permalink }}">{{ menu.page._params.title }} - {{ menu.page._json_.fields.regular_price|{:.2f} }}</a></li>
 {% endfor %}
-```
 
-```bash
-{{ title }}
-{{ fields.short_title }}
-{{ fields.regular_price|{:.2f} }}
+# basic render of current timestamp
+{% time %}		
+
+{{ _params.title }}
+{{ _json_.short_title }}
+{{ _json.regular_price|{:.2f} }}
 ```
 
 ### Content config
