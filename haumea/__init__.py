@@ -9,12 +9,6 @@ import shutil
 import argparse
 import threading
 
-'''
-from http.server import HTTPServer, SimpleHTTPRequestHandler
-from socketserver import BaseServer
-import ssl
-'''
-
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
@@ -329,15 +323,7 @@ class PageBundle(Page):
 
 
 def serve(port=8000):
-    os.system("python3 -m http.server --bind 127.0.0.1 --directory %s" % output_path)
-    '''
-    os.chdir(output_path)
-    httpd = HTTPServer(('localhost', port), SimpleHTTPRequestHandler)
-    #httpd.socket = ssl.wrap_socket(httpd.socket, certfile='certificate.pem', server_side=True)
-    logging.info("Serving at port %d" % port)
-    logging.info("http://localhost:%d" % port)
-    httpd.serve_forever()
-    '''
+    os.system("python3 -m http.server --bind 127.0.0.1 --directory %s %s" % (output_path, port))
 
 ##
 
@@ -352,7 +338,10 @@ def watch(target):
                 logging.error(
                     '\U0001F4A5  Unable to build the site !')
 
-    paths = [layout_path, input_path, static_path]
+    paths = [layout_path, input_path]
+    if os.path.exists(static_path):
+        paths.append(static_path)
+
     event_handler = UpdaterHandler()
     observer = Observer()
     for p in paths:
@@ -461,6 +450,8 @@ class Haumea:
 
         # clean output path
         try:
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
             shutil.rmtree(output_path)
             logging.info('Clean output path : %s' % output_path)
         except BaseException:

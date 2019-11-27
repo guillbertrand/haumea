@@ -80,28 +80,36 @@ yourprojectname
 ```bash
 # render your content into template
 {{ _content }} 	
+```
 
+```bash
 # basic template include
 {% include "partials/header.html" %}	
+```
 
+```bash
 # basic render of menu
 {% menu mymainmenu %}	
 
     # html output
     <ul>
         <li><a href="">item 1</a></li>
-        <li><a href="">item 1</a></li>
-        <li><a href="">item 1</a></li>
+        <li><a href="">item 2</a></li>
+        <li><a href="">item 3</a></li>
     </ul>
+```
 
+```bash
 # advanced render of menu
 {% menu myfootermenu a.item %}
 
     # html output
     <a class="item" href="">item 1</a>
-    <a class="item" href="">item 1</a>
-    <a class="item" href="">item 1</a>
+    <a class="item" href="">item 2</a>
+    <a class="item" href="">item 3</a>
+```
 
+```bash
 # advanced render of menu
 {% menu mycustommenu nav.menu>div.item>a.link.is-active %}
 
@@ -111,22 +119,33 @@ yourprojectname
             <a class="link is-active" href="">item 1</a>
         </div>
         <div class="item">
-            <a class="link" href="">item 1</a>
+            <a class="link" href="">item 2</a>
         </div>
         <div class="item">
-            <a class="link" href="">item 1</a>
+            <a class="link" href="">item 3</a>
         </div>
     </nav>
+```
 
+```bash
 # custom render of menu
 {% for menu in _menus.main %}
     <li><a href="{{ menu.page.permalink }}">{{ menu.page._params.title }} - {{ menu.page._json_.fields.regular_price|{:.2f} }}</a></li>
 {% endfor %}
+```
 
+```bash
 # basic render of current timestamp
 {% time %}		
+```
 
+```bash
+# render page params
 {{ _params.title }}
+```
+
+```bash
+# render json data
 {{ _json_.short_title }}
 {{ _json.regular_price|{:.2f} }}
 ```
