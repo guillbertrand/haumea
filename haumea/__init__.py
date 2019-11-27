@@ -135,24 +135,32 @@ class TemplateEngine():
                     for i, mp in enumerate(params):
                         for ii, val in enumerate(mp.split('.')):
                             node[i][ii] = val
-                ##
+                # wrap menu
                 if node[2][0]:
-                    value += '<%s class="%s">' % (node[2][0], node[2][1])
+                    value += '<%s%s>' % (node[2][0], ' class="%s"' % node[2][1] if node[2][1] else '')
                 for m in self.context['_menus'][args[1]]:
+                    item_class, str_class = [], ''
                     title = m['page']._params['nav_title'] if 'nav_title' in m['page']._params else m['page']._params['title']
+                    # wrap node
                     if node[1][0]:
-                        value += '<%s class="%s">' % (node[1][0], node[1][1])
-                    value += '<{0} class="{1} {2}" href="{3}">{4}</{0}>'.format(
+                        value += '<%s%s>' % (node[1][0], ' class="%s"' % node[1][1] if node[1][1] else '')
+                    # item class
+                    if node[0][1]:
+                        item_class.append(node[0][1])
+                    if node[0][2] and m['is_active']:
+                        item_class.append(node[0][2])
+                    if len(item_class):
+                        str_class = ' class="%s"' % ' '.join(item_class)
+                    # item
+                    value += '<{0}{1} href="{2}">{3}</{0}>'.format(
                             node[0][0],
-                            node[0][1],
-                            node[0][2] if m['is_active'] else '',
+                            str_class,
                             m['page'].permalink,
                             title)
                     if node[1][0]:
                         value += '</%s>' % (node[1][0])
                 if node[0][0]:
                     value += '</%s>' % (node[0][0])
-                ##
                 self.result.append(value)
             elif op == 'time':
                 self.result.append(str(time.time()))
