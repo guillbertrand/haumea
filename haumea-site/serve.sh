@@ -1,0 +1,1 @@
+haumea s --o ../docs/
