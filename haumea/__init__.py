@@ -64,6 +64,9 @@ class Template():
                 elif words[0].startswith('time'):
                     assert len(words) == 1
                     ops.append(('time', words[0]))
+                elif words[0].startswith('link'):
+                    assert len(words) == 2
+                    ops.append(('link', words[1]))
                 else:
                     logging.warning(
                         "\U0000270B  Don't understand tag %r" % words)
@@ -158,6 +161,13 @@ class TemplateEngine():
                 self.result.append(value)
             elif op == 'time':
                 self.result.append(str(time.time()))
+            elif op == 'link':
+                link = ''
+                link_args = args.replace('"', '').strip("/").split('#')
+                anchor = '#%s' % link_args[1] if len(link_args) == 2 else ''
+                if link_args[0] in self.context['_pages']:
+                    link = '%s' % self.context['_pages'][link_args[0]].permalink
+                self.result.append('%s%s' % (link, anchor))
             else:
                 logging.warning("Template engine error with op %r" % op)
 
@@ -204,7 +214,15 @@ class Page():
 
         self.output_filename = self.get_output_filename()
         self.output_dirname = os.path.dirname(self.output_filename)
-        self.permalink = self.output_filename.replace(output_path, '/').replace('index.html', '') 
+        self.permalink = self.get_permalink()
+        self.is_shortcut = "shortcut" in self._params
+
+    def get_permalink(self):
+        p = self.output_filename.replace(output_path, '/').replace('index.html', '') 
+        if "shortcut" in self._params:
+            if self._params["shortcut"]:
+                p = self._params["shortcut"]
+        return p
 
     def get_output_filename(self):
         # index.html
@@ -287,7 +305,7 @@ class Page():
             result = self._params['menus']
         return result
 
-    def render(self, menus):
+    def render(self, menus, pages):
         amenus = {}
         for k, m in menus.items():
             amenus[k] = []
@@ -298,6 +316,7 @@ class Page():
         data = {
             '_menus': amenus,
             '_json': self._json,
+            '_pages': pages,
             '_params': self._params
         }
         content = Template(self.final_contents).render(data)
@@ -419,11 +438,11 @@ class Haumea:
             self.menus[key] = sorted(menu, key=lambda val: int(val[1]))
 
         # add pages
-        self.pages.append(page)
+        self.pages[page.input_filename.replace(input_path, '')] = page
 
     def build(self, with_cache=False):
         self.menus = {}
-        self.pages = []
+        self.pages = {}
         self.layout_base = Haumea.get_file_contents(
             os.path.join(layout_path, '_base.html'))
 
@@ -436,8 +455,8 @@ class Haumea:
             for filename in files:
                 fn = os.path.join(root, filename)
                 json = self.cache[fn] if with_cache and fn in self.cache else {}
-                # static page
-                if os.path.splitext(filename)[1] == '.html' and filename[0] != '_':
+                # static page & shortcut page
+                if os.path.splitext(filename)[1] == '.html' and (filename[0] != '_' or filename[0] == '.'):
                     page = Page(fn, self.layout_base, json)
                     self.add(page)
                     self.add_to_cache(page)
@@ -469,11 +488,13 @@ class Haumea:
 
         ts = time.time()
         # write files
-        for page in self.pages:
+        for page in self.pages.values():
+            if page.is_shortcut:
+                continue
             if not os.path.exists(page.output_dirname):
                 os.makedirs(page.output_dirname)
             f = open(page.output_filename, "w")
-            f.write(page.render(self.menus))
+            f.write(page.render(self.menus, self.pages))
             f.close()
             logging.info('\U00002728  Render page \U0001F527  %s' % (page.output_filename.replace(working_dir, '')))
 

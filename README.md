@@ -148,6 +148,13 @@ yourprojectname
 ```
 
 ```bash
+# render absolute permalink
+{% link "about.html" %}       # > /about/index.html
+{% link "/blog/post-2020.html#more" %}       # > /blog/post-2020/#more
+{% link "#more" %}       # > #more
+```
+
+```bash
 # render page params
 {{ _params.title }}
 ```
