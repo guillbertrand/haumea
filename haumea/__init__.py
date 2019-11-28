@@ -29,7 +29,11 @@ class Template():
 
         ops = []
         ops_stack = []
-        for tok in toks:
+        for i, tok in enumerate(toks):
+            # Escape '''
+            if (i-1) >= 0 and toks[i-1].strip().endswith("'''"):
+                ops.append(('lit', tok))
+                continue
             if tok.startswith('{{'):
                 # Expression: ('exp', expr)
                 ops.append(('exp', tok[2:-2].strip()))
@@ -71,7 +75,7 @@ class Template():
                     logging.warning(
                         "\U0000270B  Don't understand tag %r" % words)
             else:
-                ops.append(('lit', tok))
+                ops.append(('lit', tok.replace("'''", "")))
 
         if ops_stack:
             logging.error("\U0001F4A5  Unmatched action tag: %r" %
