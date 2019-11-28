@@ -134,7 +134,7 @@ class TemplateEngine():
                     value += '<%s%s>' % (node[2][0], ' class="%s"' % node[2][1] if node[2][1] else '')
                 for m in self.context['_menus'][args[1]]:
                     item_class, str_class = [], ''
-                    title = m['page']._params['nav_title'] if 'nav_title' in m['page']._params else m['page']._params['title']
+                    title = m['page']._params['nav-title'] if 'nav-title' in m['page']._params else m['page']._params['title']
                     # wrap node
                     if node[1][0]:
                         value += '<%s%s>' % (node[1][0], ' class="%s"' % node[1][1] if node[1][1] else '')
@@ -191,20 +191,20 @@ class Page():
         self.basedirname = os.path.dirname(filename.replace(input_path, ''))
         self.basename = os.path.basename(filename)
         self.params_pattern = r"---(.*)---\n?"
-        self.base_layout = base_layout
 
         self.raw_contents = Haumea.get_file_contents(self.input_filename)
         self.final_contents = re.sub(
             self.params_pattern, '', self.raw_contents, 0, re.DOTALL)
 
         self._params = self.get_params()
+        self.base_layout = Haumea.get_file_contents(os.path.join(layout_path, self._params["layout"])) if "layout" in self._params else base_layout
 
         self.load_data_from_json()
         self.render_params()
 
         self.output_filename = self.get_output_filename()
         self.output_dirname = os.path.dirname(self.output_filename)
-        self.permalink = self.output_filename.replace(output_path, '/').replace('index.html', '')
+        self.permalink = self.output_filename.replace(output_path, '/').replace('index.html', '') 
 
     def get_output_filename(self):
         # index.html
@@ -490,10 +490,17 @@ class Haumea:
 def haumea_parse_args():
     parser = argparse.ArgumentParser(
         description='Haumea Static Site Generator',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("action",
                         default="build",
-                        help="Action : build, serve")
+                        help='''"haumea build" or "haumea b" performs 
+a build of your site to ./public (by default) 
+
+"haume serve" or "haumea s" builds your site 
+any time a source file changes ans serves it locally
+
+"haumea new post.html" Create new haumea blank content
+in ./content/ with all params''')
     parser.add_argument('-p', '--port', default=8000, type=int, nargs="?",
                         help="Port to Listen On")
     parser.add_argument('-o', '--output', default='public/',
@@ -532,16 +539,13 @@ def main():
     action = args.action
     if args.output:
         output_path = os.path.join(working_dir, args.output)
-
-    h = Haumea()
-
     FORMAT = '* %(levelname)s - %(message)s'
     logging.basicConfig(level=args.verbosity, format=FORMAT)
 
-    if action == "build":    
+    h = Haumea()
+    if action in ["build", "b"]:
         h.build()
-
-    if action == "serve":
+    elif action in ["serve", "s"]:
         def task1():
             serve(args.port)
 

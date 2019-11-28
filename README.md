@@ -39,14 +39,22 @@ Build & test your website
 
 ```bash
 $ cd yourprojectname/
+
+# builds your site any time a source file changes ans serves it locally
 $ haumea serve
+or 
+$ haumea s
 ```
 
 Or just build
 
 ```bash
 $ cd yourprojectname/
+
+# performs build of your site to ./public (by default)
 $ haumea build
+or
+$ haumea b
 ```
 
 ## Documentation
@@ -163,6 +171,9 @@ yourprojectname
     "menus":["main", "footer"]
 }
 ---
+<div class="main">
+    Hello World !
+</div>
 ```
 
 #### Single page from JSON or REST API
@@ -182,6 +193,9 @@ yourprojectname
     "slug" : "test"
 }
 ---
+<div class="main">
+    Hello World !
+</div>
 ```
 
 #### Page bundle from JSON with GraphQL
@@ -202,15 +216,19 @@ yourprojectname
     "meta-title" : "{{ _json.meta_title }}",
     "slug" : "{{ _json.slug }}",
 
-    "menus" : [ "products", "footer" ]
+    "menus" : [ "products", "footer" ],
+
+    "layout" : "layout.html"    # Default "_base.html"
 }
 ---
+<div class="main">
+    Hello World !
+</div>
 ```
 
 **\_page.graphql**
 
 ```bash
----
 query {
     launchesPast(limit: 80) {
         mission_name
@@ -222,5 +240,5 @@ query {
         }
     }
 }
----
+
 ```
