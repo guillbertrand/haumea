@@ -522,10 +522,7 @@ def haumea_parse_args():
 a build of your site to ./public (by default) 
 
 "haume serve" or "haumea s" builds your site 
-any time a source file changes ans serves it locally
-
-"haumea new post.html" Create new haumea blank content
-in ./content/ with all params''')
+any time a source file changes ans serves it locally''')
     parser.add_argument('-p', '--port', default=8000, type=int, nargs="?",
                         help="Port to Listen On")
     parser.add_argument('-o', '--output', default='public/',
