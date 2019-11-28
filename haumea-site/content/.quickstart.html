@@ -1,21 +1,12 @@
-<!DOCTYPE html>
-<html lang="">
-    <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width,minimum-scale=1">
-    <title>Haumea.io - Documentation</title>
-    <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Lato:400,700,900|Lora:400,700,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/main.css?v=1574955541.699401">
-</head>
-    <body class="">
-        <div class="bg"></div>
-        <header>
-    <h1 class="title">haumea<span>.io</span> <small>beta</small></h1>
-    <ul class="main"><li><a href="/">Home</a></li><li><a href="/documentation/#installation">Installation</a></li><li><a href="/documentation/#quickstart">Quickstart</a></li><li><a href="/documentation/#documentation">Documentation</a></li><li><a href="https://github.com/guillbertrand/haumea">Github</a></li><li><a href="/about/">About</a></li></a>
-</header>
-        <div id="content">
-            <div class="documentation">
+---
+{
+    "title":"Quickstart",
+    "nav_title" : "Docs",
+    "menus" : [ "main:2" ],
+    "shortcut" : "/documentation/#quickstart"
+}
+---
+<div class="documentation">
 
     <section>
         <h2 id="installation">Installation </h2>
@@ -78,11 +69,32 @@
     <section>
         <h2 id="documentation">Documentation</h2>
         <h3 id="directorystructuresample">Directory Structure (sample)</h3>
-
-        <p>....</p>
     </section>
 </div>
 
-        </div>
-    </body>
-</html>
+
+
+
+
+<pre><code class="bash language-bash">yourprojectname
+├── content
+│   └── index.html            # Simple page
+│   └── about.html            # Simple page
+│       └── blog                    # Subdir
+│           └── post-1.html         # Simple page
+│        └── post-2.html         # Simple page
+│        └── post-3.html         # Simple page
+│   └── products/                # Subdir
+│        └── _product.html       # Page bundle (create from a json array of data)
+│        └── _product.graphql    # graphql query (for json-request-type="graphql")
+├── layouts
+│   └── partials
+│       └── footer.html
+│       └── header.html
+│       └── head.html
+│   └── _base.html
+├── public
+└── static
+</code></pre>
+
+<h3 id="templatingtagslayoutsdir">Templating tags (layouts dir)</h3>
