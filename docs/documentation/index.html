@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <title>Haumea.io - Documentation</title>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Lato:400,700,900|Lora:400,700,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/main.css?v=1574956092.119921">
+    <link rel="stylesheet" type="text/css" href="/main.css?v=1574963129.2326431">
 </head>
     <body class="">
         <div class="bg"></div>
@@ -78,7 +78,113 @@
     <section>
         <h2 id="documentation">Documentation</h2>
         <h3 id="directorystructuresample">Directory Structure (sample)</h3>
-
+        <div class="terminal w600 withoutbefore" >
+            <ul>
+                <li>yourprojectname</li>
+                <li>├── content</li>
+                <li>│   └── index.html			<span># Simple page</span></li>
+                <li>│   └── about.html			<span># Simple page</span></li>
+                <li>│   	└── blog             		<span># Subdirectory</span></li>
+                <li>│   	    └── post-1.html     	<span># Simple page</span></li>
+                <li>│	    └── post-2.html   		<span># Simple page</span></li>
+                <li>│	    └── post-3.html 		<span># Simple page</span></li>
+                <li>│   └── products/        		<span># Subdirectory</span></li>
+                <li>│	    └── _product.html 		<span># Page bundle (create from a json array of data)</span></li>
+                <li>│	    └── _product.graphql	<span># graphql query (for json-request-type="graphql")</span></li>
+                <li>├── layouts</li>
+                <li>│   └── partials</li>
+                <li>│   	└── footer.html</li>
+                <li>│   	└── header.html</li>
+                <li>│   	└── head.html</li>
+                <li>│   └── _base.html</li>
+                <li>├── public</li>
+                <li>└── static</li>
+            </ul>
+        </div>
+        <h3 id="directorystructuresample">Layouts templating tags ./layouts/</h3>
+        <div class="terminal w600 withoutbefore" >
+            <ul>
+                <li>{{ _content }} <span># render your content into template</span></li>
+                <li></li>
+                <li>{% include "partials/header.html" %}	<span># basic template include</span></li>
+                <li></li>
+            </ul>
+        </div>
+        <h3 id="directorystructuresample">Contents templating tags ./content/</h3>
+        <p>Render json content (from your RESTful or GraphQL API)</p>
+        <div class="terminal w600 withoutbefore" >
+            <ul>
+                <li>{{ _json.short_title }}</li>
+                <li><span>&ltstrong&gt</span>{{ _json.regular_price|{:.2f} }}<span>&lt/strong&gt</span></li>
+                <li></li>
+                <li>{% if  _json.regular_price > 10.0 %}</li>
+                <li><span>&ltspan&gt</span>Price :<span>&lt/span&gt</span>{{ _json.regular_price|{:.2f} }}</li>
+                <li>{% endif %}</li>
+                <li></li>
+                <li>{% for tag in _json.data.tags %}</li>
+                <li><span>&ltspan&gt</span>Tags :<span>&lt/span&gt</span>{{ tag }}</li>
+                <li>{% endfor %}</li>
+            </ul>
+        </div>
+        <p>Render current page params</p>
+        <div class="terminal w600 withoutbefore" >
+            <ul>
+                <li>{{ _params.title }}</li>
+                <li>{{ _params.nav-title }}</li>
+                <li>{{ _params.meta-title }}</li>
+                <li>{{ _params.meta-desc }}</li>
+                <li>{{ _params.slug }}</li>
+                <li>...</li>
+            </ul>
+        </div>
+        <p>Render absolute permalink</p>
+        <div class="terminal w600 withoutbefore" >
+            <ul>
+                <li>{% link "about.html" %}  </li>
+                <li>{% link "/blog/post-2020.html#more" %}</li>
+                <li>{% link "#more" %}</li>
+                <li>...</li>
+            </ul>
+        </div>
+        <p>Render datetime</p>
+        <div class="terminal w600 withoutbefore" >
+            <ul>
+                <li>{% time %} <span># Output current timestamp</span></li>
+            </ul>
+        </div>
+        <p>Basic & advanced menu rendering</p>
+        <div class="terminal w600 withoutbefore" >
+            <ul>
+                <li>{% menu <span>mymainmenu</span> %}</li>
+                <li>
+                    <xmp>
+<ul>
+    <li><a href="">item 1</a></li>
+    <li><a href="">item 2</a></li>
+    <li><a href="">item 3</a></li>
+</ul>
+                        </xmp></li>
+                <li></li>
+                <li>{% menu <span>footermenu</span> a.item %}</li>
+                <li>
+                    <xmp>
+<ul>
+    <li><a class="item" href="">item 1</a></li>
+    <li><a class="item" href="">item 2</a></li>
+    <li><a class="item" href="">item 3</a></li>
+</ul>
+                </xmp></li>
+                <li>{% menu <span>mycustommenu</span> nav.menu>div.item>a.link.is-active %}</li>
+                <li>
+                    <xmp>
+<nav>
+    <div><a class="link is-active" href="">item 1</a></div>
+    <div><a class="link" href="">item 2</a></div>
+    <div><a class="link" href="">item 3</a></div>
+</nav>
+                </xmp></li>
+            </ul>
+        </div>
         <p>....</p>
     </section>
 </div>

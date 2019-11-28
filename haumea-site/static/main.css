@@ -28,6 +28,13 @@ h2 {
     margin:20px 0 25px 0;
 }
 
+h3 {
+    font-family: 'Lato', serif;
+    font-weight: 400;
+    font-size: 23px;
+    margin:20px 0 25px 0;
+}
+
 h2 strong {
     font-family: 'Lato', serif;
     font-weight: 700;
@@ -95,6 +102,14 @@ h1 small {
     border-bottom-right-radius: 5px;
 }
 
+xmp {
+    color:#bd3058;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 12px;
+    padding: 0;
+    margin: 0 0 0 10px;
+}
+
 .documentation .terminal ul {
     height: auto;
     padding: 10px;
@@ -126,6 +141,12 @@ h1 small {
     color: #4c535c;
     margin-right: 10px;
 }
+
+xmp::before {
+    content: '';
+    margin: 0;
+}
+
 
 ul.main {
     display: flex;
