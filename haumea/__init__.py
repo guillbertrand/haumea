@@ -141,7 +141,7 @@ class TemplateEngine():
                     value += '<%s%s>' % (node[2][0], ' class="%s"' % node[2][1] if node[2][1] else '')
                 for m in self.context['_menus'][args[1]]:
                     item_class, str_class = [], ''
-                    title = m['page']._params['nav-title'] if 'nav-title' in m['page']._params else m['page']._params['title']
+                    title = m['page'].p('nav-title') if m['page'].p('nav-title') else m['page'].p('title')
                     # wrap node
                     if node[1][0]:
                         value += '<%s%s>' % (node[1][0], ' class="%s"' % node[1][1] if node[1][1] else '')
@@ -211,7 +211,7 @@ class Page():
             self.params_pattern, '', self.raw_contents, 0, re.DOTALL)
 
         self._params = self.get_params()
-        self.base_layout = Haumea.get_file_contents(os.path.join(layout_path, self._params["layout"])) if "layout" in self._params else base_layout
+        self.base_layout = Haumea.get_file_contents(os.path.join(layout_path, self.p("layout"))) if self.p('layout') else base_layout
 
         self.load_data_from_json()
         self.render_params()
@@ -219,13 +219,14 @@ class Page():
         self.output_filename = self.get_output_filename()
         self.output_dirname = os.path.dirname(self.output_filename)
         self.permalink = self.get_permalink()
-        self.is_shortcut = "shortcut" in self._params
+        self.is_shortcut = self.p("shortcut")
 
     def get_permalink(self):
-        p = self.output_filename.replace(output_path, '/').replace('index.html', '') 
-        if "shortcut" in self._params:
-            if self._params["shortcut"]:
-                p = self._params["shortcut"]
+        p = self.output_filename.replace(output_path, '').replace('index.html', '')
+        if not p.startswith('/'):
+            p = '/%s' % p 
+        if self.p("shortcut"):
+            p = self.p("shortcut")
         return p
 
     def get_output_filename(self):
@@ -234,26 +235,26 @@ class Page():
             output_filename = os.path.join(
                 output_path, self.basedirname, 'index.html')
         # slug with basename
-        elif self.basename[0] != '_' and 'slug' not in self._params:
+        elif self.basename[0] != '_' and not self.p('slug'):
             output_filename = os.path.join(
                 output_path, self.basedirname, os.path.splitext(self.basename)[0], "index.html")
         # slug with params
         else:
-            slug = str(self._params['slug']).replace(
+            slug = str(self.p('slug')).replace(
                 '/', '').replace(' ', '-')  # TODO slugify
             output_filename = os.path.join(output_path, self.basedirname, slug, "index.html")
         return output_filename
 
     def load_data_from_json(self):
-        if not self._json and "json-source" in self._params:
+        if not self._json and self.p("json-source"):
             try:
                 ts = time.time()
 
-                source = self._params['json-source']
-                payload = self._params['json-params'] if 'json-params' in self._params else ''
-                headers = self._params['json-headers'] if 'json-headers' in self._params else ''
-                root_node = self._params['json-root-node'] if 'json-root-node' in self._params else ''
-                req_type = self._params['json-request-type'] if 'json-request-type' in self._params else 'get'
+                source = self.p("json-source")
+                payload = self.p('json-params')
+                headers = self.p('json-headers')
+                root_node = self.p('json-root-node')
+                req_type = self.p('json-request-type')
 
                 if req_type == 'graphql':
                     gql_file = os.path.splitext(self.input_filename)[
@@ -284,17 +285,37 @@ class Page():
             except BaseException:
                 logging.error('\U0001F4A5  Unable to load json file {:.80}'.format(source))
 
+    def p(self, key):
+        res = None
+        if(self._params):
+            if key in self._params:
+                res = self._params[key] if self._params[key] else None
+        return res
+
     def get_params(self):
-        result = {}
+        base = {
+            'json-source': '',
+            'json-request-type': 'get',
+            'json-headers': '',
+            'json-root-node': '',
+            'title': '',
+            'nav-title': '',
+            'meta-desc': '',
+            'meta-title': '',
+            'meta-keywords': '',
+            'slug': '',
+            'menus': '',
+            'layout': ''
+        }
         matches = re.finditer(self.params_pattern,
                               self.raw_contents, re.DOTALL)
         for matchNum, match in enumerate(matches, start=1):
             yml = match.group(1)
-            result = json.loads(yml)
+            result = {**base, **json.loads(yml)}
         return result
 
     def render_params(self):
-        if "json-source" in self._params:
+        if self.p("json-source"):
             for p_key, p_value in self._params.items():
                 if isinstance(p_value, str) and p_value.startswith('{{'):
                     try:
@@ -305,8 +326,8 @@ class Page():
 
     def get_menus(self):
         result = []
-        if 'menus' in self._params:
-            result = self._params['menus']
+        if self.p('menus'):
+            result = self.p('menus')
         return result
 
     def render(self, menus, pages):
@@ -529,6 +550,8 @@ any time a source file changes ans serves it locally''')
                         help='Where to output the generated files. If not '
                         'specified, a directory will be created, named '
                         '"public" in the current path.')
+    parser.add_argument('-i', '--input', default='./',
+                        help='')
     parser.add_argument('-d', '--debug', action='store_const',
                         default=logging.INFO,
                         const=logging.DEBUG, dest='verbosity',
@@ -548,19 +571,25 @@ any time a source file changes ans serves it locally''')
 #
 
 
-working_dir = os.getcwd()
-input_path = os.path.join(working_dir, 'content/')
-output_path = os.path.join(working_dir, 'public/')
-layout_path = os.path.join(working_dir, 'layouts/')
-static_path = os.path.join(working_dir, 'static/')
-
-
 def main():
+    global working_dir
+    global input_path
     global output_path
+    global layout_path
+    global static_path
+
     args = haumea_parse_args()
     action = args.action
+
+    working_dir = os.getcwd()
+    input_path = os.path.join(working_dir, 'content/')
+    output_path = os.path.join(working_dir, 'public/')
+    layout_path = os.path.join(working_dir, 'layouts/')
+    static_path = os.path.join(working_dir, 'static/')
+
     if args.output:
         output_path = os.path.join(working_dir, args.output)
+
     FORMAT = '* %(levelname)s - %(message)s'
     logging.basicConfig(level=args.verbosity, format=FORMAT)
 
