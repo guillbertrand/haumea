@@ -141,7 +141,7 @@ class TemplateEngine():
                     value += '<%s%s>' % (node[2][0], ' class="%s"' % node[2][1] if node[2][1] else '')
                 for m in self.context['_menus'][args[1]]:
                     item_class, str_class = [], ''
-                    title = m['page']._params['nav-title'] if 'nav-title' in m['page']._params else m['page']._params['title']
+                    title = m['page'].p('nav-title') if m['page'].p('nav-title') else m['page'].p('title')
                     # wrap node
                     if node[1][0]:
                         value += '<%s%s>' % (node[1][0], ' class="%s"' % node[1][1] if node[1][1] else '')
@@ -222,7 +222,9 @@ class Page():
         self.is_shortcut = self.p("shortcut")
 
     def get_permalink(self):
-        p = self.output_filename.replace(output_path, '/').replace('index.html', '') 
+        p = self.output_filename.replace(output_path, '').replace('index.html', '')
+        if not p.startswith('/'):
+            p = '/%s' % p 
         if self.p("shortcut"):
             p = self.p("shortcut")
         return p
@@ -302,7 +304,7 @@ class Page():
             'meta-title': '',
             'meta-keywords': '',
             'slug': '',
-            'menus': [],
+            'menus': '',
             'layout': ''
         }
         matches = re.finditer(self.params_pattern,
@@ -575,7 +577,7 @@ def main():
     global output_path
     global layout_path
     global static_path
-    
+
     args = haumea_parse_args()
     action = args.action
 
