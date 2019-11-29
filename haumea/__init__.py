@@ -211,7 +211,7 @@ class Page():
             self.params_pattern, '', self.raw_contents, 0, re.DOTALL)
 
         self._params = self.get_params()
-        self.base_layout = Haumea.get_file_contents(os.path.join(layout_path, self._params["layout"])) if "layout" in self._params else base_layout
+        self.base_layout = Haumea.get_file_contents(os.path.join(layout_path, self.p("layout"))) if self.p('layout') else base_layout
 
         self.load_data_from_json()
         self.render_params()
@@ -219,13 +219,12 @@ class Page():
         self.output_filename = self.get_output_filename()
         self.output_dirname = os.path.dirname(self.output_filename)
         self.permalink = self.get_permalink()
-        self.is_shortcut = "shortcut" in self._params
+        self.is_shortcut = self.p("shortcut")
 
     def get_permalink(self):
         p = self.output_filename.replace(output_path, '/').replace('index.html', '') 
-        if "shortcut" in self._params:
-            if self._params["shortcut"]:
-                p = self._params["shortcut"]
+        if self.p("shortcut"):
+            p = self.p("shortcut")
         return p
 
     def get_output_filename(self):
@@ -234,26 +233,26 @@ class Page():
             output_filename = os.path.join(
                 output_path, self.basedirname, 'index.html')
         # slug with basename
-        elif self.basename[0] != '_' and 'slug' not in self._params:
+        elif self.basename[0] != '_' and not self.p('slug'):
             output_filename = os.path.join(
                 output_path, self.basedirname, os.path.splitext(self.basename)[0], "index.html")
         # slug with params
         else:
-            slug = str(self._params['slug']).replace(
+            slug = str(self.p('slug')).replace(
                 '/', '').replace(' ', '-')  # TODO slugify
             output_filename = os.path.join(output_path, self.basedirname, slug, "index.html")
         return output_filename
 
     def load_data_from_json(self):
-        if not self._json and "json-source" in self._params:
+        if not self._json and self.p("json-source"):
             try:
                 ts = time.time()
 
-                source = self._params['json-source']
-                payload = self._params['json-params'] if 'json-params' in self._params else ''
-                headers = self._params['json-headers'] if 'json-headers' in self._params else ''
-                root_node = self._params['json-root-node'] if 'json-root-node' in self._params else ''
-                req_type = self._params['json-request-type'] if 'json-request-type' in self._params else 'get'
+                source = self.p("json-source")
+                payload = self.p('json-params')
+                headers = self.p('json-headers')
+                root_node = self.p('json-root-node')
+                req_type = self.p('json-request-type')
 
                 if req_type == 'graphql':
                     gql_file = os.path.splitext(self.input_filename)[
@@ -284,38 +283,37 @@ class Page():
             except BaseException:
                 logging.error('\U0001F4A5  Unable to load json file {:.80}'.format(source))
 
-    def get_param(self, key):
+    def p(self, key):
         res = None
-        if key in self._params:
-            r = self._params[key]
-            res = r if r else None
+        if(self._params):
+            if key in self._params:
+                res = self._params[key] if self._params[key] else None
         return res
 
     def get_params(self):
-        result = {
-            'json-source': None,
-            'json-request-type': None,
-            'json-headers': None,
-            'json-root-node': None,
-            'title': None,
-            'nav-title': None,
-            'meta-desc': None,
-            'meta-title': None,
-            'meta-keywords': None,
-            'slug': None,
+        base = {
+            'json-source': '',
+            'json-request-type': 'get',
+            'json-headers': '',
+            'json-root-node': '',
+            'title': '',
+            'nav-title': '',
+            'meta-desc': '',
+            'meta-title': '',
+            'meta-keywords': '',
+            'slug': '',
             'menus': [],
-            'layout': None
+            'layout': ''
         }
         matches = re.finditer(self.params_pattern,
                               self.raw_contents, re.DOTALL)
         for matchNum, match in enumerate(matches, start=1):
             yml = match.group(1)
-            result = result.update(json.loads(yml))
-
+            result = {**base, **json.loads(yml)}
         return result
 
     def render_params(self):
-        if "json-source" in self._params:
+        if self.p("json-source"):
             for p_key, p_value in self._params.items():
                 if isinstance(p_value, str) and p_value.startswith('{{'):
                     try:
@@ -326,8 +324,8 @@ class Page():
 
     def get_menus(self):
         result = []
-        if 'menus' in self._params:
-            result = self._params['menus']
+        if self.p('menus'):
+            result = self.p('menus')
         return result
 
     def render(self, menus, pages):
