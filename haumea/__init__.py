@@ -545,7 +545,7 @@ def haumea_parse_args():
                         help='''"haumea build" or "haumea b" performs 
 a build of your site to ./public (by default) 
 
-"haume serve" or "haumea s" builds your site 
+"haumea serve" or "haumea s" builds your site 
 any time a source file changes ans serves it locally''')
     parser.add_argument('-p', '--port', default=8000, type=int, nargs="?",
                         help="Port to Listen On")
