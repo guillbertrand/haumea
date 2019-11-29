@@ -8,13 +8,13 @@
     <meta name="title" content="" />
     <title>Haumea.io - Documentation</title>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Lato:400,700,900|Lora:400,700,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/main.css?v=1575042572.2518451">
+    <link rel="stylesheet" type="text/css" href="/main.css?v=1575053806.797395">
 </head>
     <body class="">
         <div class="github"><a class="github-button" href="https://github.com/guillbertrand/haumea" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star guillbertrand/haumea on GitHub">Star</a></div>
         <div class="bg"></div>
         <header>
-    <h1 class="title">haumea<span>.io</span> <small>0.6.6 beta</small></h1>
+    <h1 class="title"><a href="https://haumea.io">haumea<span>.io</span></a><small>0.6.6 beta</small></h1>
     <ul class="main"><li><a href="/">Home</a></li><li><a class="is-active" href="/documentation/">Docs</a></li><li><a href="https://github.com/guillbertrand/haumea">Github</a></li><li><a href="/about/">About</a></li></a>
 </header>
         <div id="content">
@@ -195,7 +195,7 @@
             Page bundle : <span>_example.html</span></br> 
             Shortcut page : <span>.example.html</span><br/></p>
             <p><br/></p>
-        <p>Single page - Example with <span>content/home.html</span></p>
+        <p><strong>Single page</strong> - Example <span>content/home.html</span></p>
         <div class="terminal w600 withoutbefore" >
             <ul>
                 <li>&#45;&#45;&#45;</li>
@@ -206,7 +206,7 @@
                 <li>&#45;&#45;&#45;</li>
             </ul>
         </div>
-        <p>Single page from JSON or REST API - Example with <span>content/page.html</span></p>
+        <p><strong>Single page</strong> from JSON or REST API - Example <span>content/page.html</span></p>
         <div class="terminal w600 withoutbefore" >
             <ul>
                 <li>&#45;&#45;&#45;</li>
@@ -223,7 +223,10 @@
                 <li>&#45;&#45;&#45;</li>
             </ul>
         </div>
-        <p>Page bundle from JSON with GraphQL - Example with <span>content/blog/_post.html</span></p>
+        <p><strong>Page bundle</strong> from JSON with GraphQL - Example <span>content/blog/_post.html</span></p>
+        <p><span>"json-source"</span> data must return an array.<br/>
+            Each element of the array will be used to generate a page<br/>
+            The slug must be dynamic and unique <span>{{ _json.slug }}</span> </p>
         <div class="terminal w600 withoutbefore" >
             <ul>
                 <li>&#45;&#45;&#45;</li>
@@ -245,7 +248,7 @@
                 <li>&#45;&#45;&#45;</li>
             </ul>
         </div>
-        <p>GraphQL file - Example with <span>content/blog/_post.graphql</span></p>
+        <p>GraphQL file - Example <span>content/blog/_post.graphql</span></p>
         <div class="terminal w600 withoutbefore" >
             <ul>
                 <li>query {</li>

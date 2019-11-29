@@ -68,6 +68,15 @@ h1 {
 h1 span {
     font-size: 35px;
     font-weight: normal;
+    font-style:italic;
+}
+
+h1 a {
+    text-decoration: none;
+}
+
+h1 a:hover span {
+   font-style: normal;
 }
 
 h1 small {
