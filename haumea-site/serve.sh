@@ -1,0 +1,1 @@
+python3 -m haumea s -o ../docs -i haumea-site/
