@@ -284,13 +284,34 @@ class Page():
             except BaseException:
                 logging.error('\U0001F4A5  Unable to load json file {:.80}'.format(source))
 
+    def get_param(self, key):
+        res = None
+        if key in self._params:
+            r = self._params[key]
+            res = r if r else None
+        return res
+
     def get_params(self):
-        result = {}
+        result = {
+            'json-source': None,
+            'json-request-type': None,
+            'json-headers': None,
+            'json-root-node': None,
+            'title': None,
+            'nav-title': None,
+            'meta-desc': None,
+            'meta-title': None,
+            'meta-keywords': None,
+            'slug': None,
+            'menus': [],
+            'layout': None
+        }
         matches = re.finditer(self.params_pattern,
                               self.raw_contents, re.DOTALL)
         for matchNum, match in enumerate(matches, start=1):
             yml = match.group(1)
-            result = json.loads(yml)
+            result = result.update(json.loads(yml))
+
         return result
 
     def render_params(self):
@@ -529,6 +550,8 @@ any time a source file changes ans serves it locally''')
                         help='Where to output the generated files. If not '
                         'specified, a directory will be created, named '
                         '"public" in the current path.')
+    parser.add_argument('-i', '--input', default='./',
+                        help='')
     parser.add_argument('-d', '--debug', action='store_const',
                         default=logging.INFO,
                         const=logging.DEBUG, dest='verbosity',
@@ -548,19 +571,25 @@ any time a source file changes ans serves it locally''')
 #
 
 
-working_dir = os.getcwd()
-input_path = os.path.join(working_dir, 'content/')
-output_path = os.path.join(working_dir, 'public/')
-layout_path = os.path.join(working_dir, 'layouts/')
-static_path = os.path.join(working_dir, 'static/')
-
-
 def main():
+    global working_dir
+    global input_path
     global output_path
+    global layout_path
+    global static_path
+    
     args = haumea_parse_args()
     action = args.action
+
+    working_dir = os.getcwd()
+    input_path = os.path.join(working_dir, 'content/')
+    output_path = os.path.join(working_dir, 'public/')
+    layout_path = os.path.join(working_dir, 'layouts/')
+    static_path = os.path.join(working_dir, 'static/')
+
     if args.output:
         output_path = os.path.join(working_dir, args.output)
+
     FORMAT = '* %(levelname)s - %(message)s'
     logging.basicConfig(level=args.verbosity, format=FORMAT)
 
