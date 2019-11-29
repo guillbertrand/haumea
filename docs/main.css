@@ -61,7 +61,7 @@ p span {
 h1 {
     font-family: 'Lora', serif;
     font-size: 60px;
-    margin: 10px 0;
+    margin: 30px 0 10px 0;
     font-weight: bold;
 }
 
@@ -82,6 +82,7 @@ h1 small {
     width: 150px;
     font-weight: bold;
     font-family: 'Lato', serif;
+    z-index: -1;
 }
 
 .terminal {
@@ -192,7 +193,7 @@ ul.main li a.is-active {
 }
 
 .button {
-    margin: 20px;
+    margin: -25px auto 100px auto;
     text-decoration: none;
     font-weight: 700;
     background: #fff;
@@ -200,6 +201,8 @@ ul.main li a.is-active {
     color: #141e2b;
     text-transform: uppercase;
     font-family: 'Lato';
+    display: block;
+    width: 155px;
 }
 
 .button:hover {
