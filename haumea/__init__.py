@@ -463,7 +463,10 @@ class Haumea:
             self.menus[key] = sorted(menu, key=lambda val: int(val[1]))
 
         # add pages
-        self.pages[page.input_filename.replace(input_path, '')] = page
+        if page.basename.startswith('_'):
+            self.pages[page.output_dirname.replace(output_path, '')] = page
+        else:
+            self.pages[page.input_filename.replace(input_path, '')] = page
 
     def build(self, with_cache=False):
         self.menus = {}
@@ -550,8 +553,8 @@ any time a source file changes ans serves it locally''')
                         help='Where to output the generated files. If not '
                         'specified, a directory will be created, named '
                         '"public" in the current path.')
-    parser.add_argument('-i', '--input', default='./',
-                        help='')
+    parser.add_argument('-s', '--source', default='./',
+                        help='Filesystem path to read files relative from')
     parser.add_argument('-d', '--debug', action='store_const',
                         default=logging.INFO,
                         const=logging.DEBUG, dest='verbosity',
@@ -582,6 +585,9 @@ def main():
     action = args.action
 
     working_dir = os.getcwd()
+    if args.source:
+        working_dir = os.path.join(working_dir, args.source)
+
     input_path = os.path.join(working_dir, 'content/')
     output_path = os.path.join(working_dir, 'public/')
     layout_path = os.path.join(working_dir, 'layouts/')
