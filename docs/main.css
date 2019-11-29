@@ -71,8 +71,17 @@ h1 span {
 }
 
 h1 small {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: normal;
+    position: absolute;
+    top: 20px;
+    left: -40px;
+    transform: rotate(-45deg); 
+    background-color: #eb8712;
+    padding: 10px;
+    width: 150px;
+    font-weight: bold;
+    font-family: 'Lato', serif;
 }
 
 .terminal {
@@ -99,7 +108,6 @@ h1 small {
     padding: 5px;
     margin: 0px;
     background-color: #182533;
-    height: 200px;
     color:lightgray;
     font-family: 'Noto Sans', sans-serif;
     font-size: 14px;
