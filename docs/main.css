@@ -41,7 +41,12 @@ h2 strong {
     font-size: 42px; 
 }
 
-p { margin-bottom: 60px;}
+p { margin-bottom: 60px; line-height: 25px;}
+p span {
+    background: #eb8712;
+    font-weight: bold;
+    padding: 2px 5px;
+}
 
 .bg {
     background-image: linear-gradient(to right top, #051937, #4d285b, #9a2e61, #d64b49, #eb8712);
@@ -103,11 +108,13 @@ h1 small {
 }
 
 xmp {
-    color:#bd3058;
+    color:#fff;
     font-family: 'Noto Sans', sans-serif;
     font-size: 12px;
-    padding: 0;
-    margin: 0 0 0 10px;
+    padding: 10px;
+    margin: 10px;
+    background: #354658;
+    border-radius: 10px;
 }
 
 .documentation .terminal ul {
