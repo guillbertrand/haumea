@@ -96,9 +96,9 @@
         <p><span>./layouts/*</span></p>
         <div class="terminal w600 withoutbefore" >
             <ul>
-                <li>'''{{ _content }} <span># render your content into template</span></li>
+                <li>'EXPR{{ _content }} <span># render your content into template</span></li>
                 <li></li>
-                <li>'''{% include "partials/header.html" %}	<span># basic template include</span></li>
+                <li>'EXPR{% include "partials/header.html" %}	<span># basic template include</span></li>
                 <li></li>
             </ul>
         </div>
@@ -107,48 +107,48 @@
         <p>Render json content (from your RESTful or GraphQL API)</p>
         <div class="terminal w600 withoutbefore" >
             <ul>
-                <li>'''{{ _json.short_title }}</li>
-                <li><span>&ltstrong&gt</span>'''{{ _json.regular_price|{:.2f} }}<span>&lt/strong&gt</span></li>
+                <li>'EXPR{{ _json.short_title }}</li>
+                <li><span>&ltstrong&gt</span>'EXPR{{ _json.regular_price|{:.2f} }}<span>&lt/strong&gt</span></li>
                 <li></li>
-                <li>'''{% if  _json.regular_price > 10.0 %}</li>
-                <li>&emsp;&emsp;<span>&ltspan&gt</span>Price :<span>&lt/span&gt</span>'''{{ _json.regular_price|{:.2f} }}</li>
-                <li>'''{% endif %}</li>
+                <li>'EXPR{% if  _json.regular_price > 10.0 %}</li>
+                <li>&emsp;&emsp;<span>&ltspan&gt</span>Price :<span>&lt/span&gt</span>'EXPR{{ _json.regular_price|{:.2f} }}</li>
+                <li>'EXPR{% endif %}</li>
                 <li></li>
-                <li>'''{% for tag in _json.data.tags %}</li>
-                <li>&emsp;&emsp;<span>&ltspan&gt</span>Tags :<span>&lt/span&gt</span>'''{{ tag }}</li>
-                <li>'''{% endfor %}</li>
+                <li>'EXPR{% for tag in _json.data.tags %}</li>
+                <li>&emsp;&emsp;<span>&ltspan&gt</span>Tags :<span>&lt/span&gt</span>'EXPR{{ tag }}</li>
+                <li>'EXPR{% endfor %}</li>
             </ul>
         </div>
         <p>Render current page params</p>
         <div class="terminal w600 withoutbefore" >
             <ul>
-                <li>'''{{ _params.title }}</li>
-                <li>'''{{ _params.nav-title }}</li>
-                <li>'''{{ _params.meta-title }}</li>
-                <li>'''{{ _params.meta-desc }}</li>
-                <li>'''{{ _params.slug }}</li>
+                <li>'EXPR{{ _params.title }}</li>
+                <li>'EXPR{{ _params.nav-title }}</li>
+                <li>'EXPR{{ _params.meta-title }}</li>
+                <li>'EXPR{{ _params.meta-desc }}</li>
+                <li>'EXPR{{ _params.slug }}</li>
                 <li>...</li>
             </ul>
         </div>
         <p>Render permalink</p>
         <div class="terminal w600 withoutbefore" >
             <ul>
-                <li>'''{% link "about.html" %}  </li>
-                <li>'''{% link "/blog/post-2020.html#more" %}</li>
-                <li>'''{% link "#more" %}</li>
+                <li>'EXPR{% link "about.html" %}  </li>
+                <li>'EXPR{% link "/blog/post-2020.html#more" %}</li>
+                <li>'EXPR{% link "#more" %}</li>
                 <li>...</li>
             </ul>
         </div>
         <p>Render datetime</p>
         <div class="terminal w600 withoutbefore" >
             <ul>
-                <li>'''{% time %} <span># Output current timestamp</span></li>
+                <li>'EXPR{% time %} <span># Output current timestamp</span></li>
             </ul>
         </div>
         <p>Basic & advanced menu rendering</p>
         <div class="terminal w600 withoutbefore" >
             <ul>
-                <li>'''{% menu <span>mymainmenu</span> %}</li>
+                <li>'EXPR{% menu <span>mymainmenu</span> %}</li>
                 <li>
                     <xmp>
 <ul>
@@ -158,7 +158,7 @@
 </ul>
                         </xmp></li>
                 <li></li>
-                <li>'''{% menu <span>footermenu</span> a.item %}</li>
+                <li>'EXPR{% menu <span>footermenu</span> a.item %}</li>
                 <li>
                     <xmp>
 <ul>
@@ -167,7 +167,7 @@
     <li><a class="item" href="">item 3</a></li>
 </ul>
                 </xmp></li>
-                <li>'''{% menu <span>mycustommenu</span> nav.menu>div.item>a.link.is-active %}</li>
+                <li>'EXPR{% menu <span>mycustommenu</span> nav.menu>div.item>a.link.is-active %}</li>
                 <li>
                     <xmp>
 <nav>
@@ -187,84 +187,87 @@
             <p><br/></p>
         <p><strong>Single page</strong> - Example <span>content/home.html</span></p>
         <div class="terminal w600 withoutbefore" >
-            <ul>
-                <li>&#45;&#45;&#45;</li>
-                <li>{</li>
-                <li>&emsp;"title":"Welcome home",</li>
-                <li>&emsp;"menus":["main", "footer"]</li>
-                <li>}</li>
-                <li>&#45;&#45;&#45;</li>
-            </ul>
+            <pre>
+'EXPR---
+{
+    "title": "Welcome home",
+    "menus": ["main", "footer"],
+    "taxonomies": [{"tags": ["author", "book"]}]
+}
+'EXPR---
+            </pre>
         </div>
         <p><strong>Single page</strong> from JSON or REST API - Example <span>content/page.html</span></p>
         <div class="terminal w600 withoutbefore" >
-            <ul>
-                <li>&#45;&#45;&#45;</li>
-                <li>{</li>
-                <li>&emsp;"json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/",</li>
-                <li>&emsp;"json-request-type" : "get",</li>
-                <li>&emsp;"json-params" : { "locale" : "fr" , "auth_token" : "XXXXXXX" },</li>
-                <li>&emsp;"json-root-node" : "data",</li>
-                <li></li>
-                <li>&emsp;"title" : "'''{{ _json.fields.title }} - '''{{ _json.fields.product_qty }}",</li>
-                <li>&emsp;"menus" : [ "main" ],</li>
-                <li>&emsp;"slug" : "test"</li>
-                <li>}</li>
-                <li>&#45;&#45;&#45;</li>
-            </ul>
+           <pre>
+'EXPR---
+{
+    "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/",
+    "json-request-type" : "get",
+    "json-params" : { "locale" : "fr" , "auth_token" : "XXXXXXX" },
+    "json-root-node" : "data",
+
+    "title" : "'EXPR{{ _json.fields.title }} - 'EXPR{{ _json.fields.product_qty }}",
+    "slug" : "test",
+
+    "menus" : [ "main" ]
+}
+'EXPR---         
+           </pre>
         </div>
         <p><strong>Page bundle</strong> from JSON with GraphQL - Example <span>content/blog/_post.html</span></p>
         <p><span>"json-source"</span> data must return an array.<br/>
             Each element of the array will be used to generate a page<br/>
-            The slug must be dynamic and unique <span>'''{{ _json.slug }}</span> </p>
+            The slug must be dynamic and unique <span>'EXPR{{ _json.slug }}</span> </p>
         <div class="terminal w600 withoutbefore" >
-            <ul>
-                <li>&#45;&#45;&#45;</li>
-                <li>{</li>
-                <li>&emsp;"json-source" : "https://graphql.datocms.com/",,</li>
-                <li>&emsp;"json-request-type" : "graphql",</li>
-                <li>&emsp;"json-headers" : {"Authorization":"token xxxxxxx"},</li>
-                <li>&emsp;"json-root-node" : "data.allProduits",</li>
-                <li></li>
-                <li>&emsp;"title": "'''{{ _json.title }}",</li>
-                <li>&emsp;"nav-title": "Navigation Title !",</li>
-                <li>&emsp;"meta-desc" : "'''{{ _json.meta_description }}",</li>
-                <li>&emsp;"meta-title" : "'''{{ _json.meta_title }}",</li>
-                <li>&emsp;"slug" : "'''{{ _json.slug }}",</li>
-                <li></li>
-                <li>&emsp;"menus" : [ "products", "footer" ],</li>
-                <li>&emsp;"layout" : "layout.html" <span># Default "_base.html"</span></li>
-                <li>}</li>
-                <li>&#45;&#45;&#45;</li>
-            </ul>
+            <pre>
+'EXPR---
+{
+    "json-source" : "https://graphql.datocms.com/",,
+    "json-request-type" : "graphql",
+    "json-headers" : {"Authorization":"token xxxxxxx"},
+    "json-root-node" : "data.allProduits",
+    "json-taxonomies": [ {"node":"category","field":"slug"} ],
+
+    "title": "'EXPR{{ _json.title }}",
+    "nav-title": "Navigation Title !",
+    "meta-desc" : "'EXPR{{ _json.meta_description }}",
+    "meta-title" : "'EXPR{{ _json.meta_title }}",
+    "slug" : "'EXPR{{ _json.slug }}",
+
+    "menus" : [ "products", "footer" ],
+    "layout" : "layout.html" <span># Default "_base.html"</span>
+}
+'EXPR---
+            </pre>
         </div>
         <p>GraphQL file - Example <span>content/blog/_post.graphql</span></p>
         <div class="terminal w600 withoutbefore" >
-            <ul>
-                <li>query {</li>
-                <li>&emsp;launchesPast(limit: 80) {</li>
-                <li>&emsp;&emsp;mission_name</li>
-                <li>&emsp;&emsp;details</li>
-                <li>&emsp;&emsp;launch_date_local</li>
-                <li>&emsp;&emsp;ships {</li>
-                <li>&emsp;&emsp;&emsp;name</li>
-                <li>&emsp;&emsp;&emsp;image</li>
-                <li>&emsp;&emsp;}</li>
-                <li>&emsp;}</li>
-                <li>}</li>
-            </ul>
+            <pre>
+query {
+    launchesPast(limit: 80) {
+        mission_name
+        details
+        launch_date_local
+        ships {
+            name
+            image
+        }
+    }
+}
+            </pre>
         </div>
         <p>Shortcut page - Example with <span>content/.haumea.html</span></p>
         <div class="terminal w600 withoutbefore" >
-            <ul>
-                <li>&#45;&#45;&#45;</li>
-                <li>{</li>
-                <li>&emsp;"title":"Haumea.io",</li>
-                <li>&emsp;"menus" : [ "main:4" ],</li>
-                <li>&emsp;"shortcut" : "https://github.com/guillbertrand/haumea"</li>
-                <li>}</li>
-                <li>&#45;&#45;&#45;</li>
-            </ul>
+            <pre>
+'EXPR---
+{
+    "title":"Haumea.io",
+    "menus" : [ "main:4" ],
+    "shortcut" : "https://github.com/guillbertrand/haumea"
+}
+'EXPR---
+            </pre>
         </div>
         <h3 id="directorystructuresample">CLI</h3>
         <div class="terminal w600" >
