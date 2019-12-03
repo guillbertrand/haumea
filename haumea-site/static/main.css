@@ -125,6 +125,19 @@ h1 small {
     border-bottom-right-radius: 5px;
 }
 
+pre {
+    padding: 5px;
+    margin: 0px;
+    background-color: #182533;
+    color:lightgray;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 14px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    padding: 10px 10px 10px 20px;
+    line-height: 22px;
+}
+
 xmp {
     color:#fff;
     font-family: 'Noto Sans', sans-serif;
@@ -145,7 +158,7 @@ xmp {
     padding-bottom: 5px;
 }
 
-.terminal ul li span { 
+.terminal ul li span, pre span { 
     color:#eb8712;
 }
 

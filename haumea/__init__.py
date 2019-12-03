@@ -31,7 +31,7 @@ class Template():
         ops_stack = []
         for i, tok in enumerate(toks):
             # Escape '''
-            if (i-1) >= 0 and toks[i-1].strip().endswith("'''"):
+            if (i-1) >= 0 and toks[i-1].strip().endswith("'EXPR"):
                 ops.append(('lit', tok))
                 continue
             if tok.startswith('{{'):
@@ -75,7 +75,7 @@ class Template():
                     logging.warning(
                         "\U0000270B  Don't understand tag %r" % words)
             else:
-                ops.append(('lit', tok.replace("'''", "")))
+                ops.append(('lit', tok.replace("'EXPR", "")))
 
         if ops_stack:
             logging.error("\U0001F4A5  Unmatched action tag: %r" %
@@ -188,7 +188,12 @@ class TemplateEngine():
                 try:
                     value = getattr(value, dot)
                 except AttributeError:
-                    value = value[dot]
+                    try:
+                        dotint = int(dot)
+                        value = value[dotint]
+                    except ValueError:
+                        value = value[dot]
+
                 if hasattr(value, '__call__'):
                     value = value()
         else:
@@ -201,20 +206,23 @@ class TemplateEngine():
 class Page():
     def __init__(self, filename, base_layout, json={}):
         self._json = json
+        self._taxonomies = {}
+
         self.input_filename = filename
         self.basedirname = os.path.dirname(filename.replace(input_path, ''))
         self.basename = os.path.basename(filename)
-        self.params_pattern = r"---(.*)---\n?"
+        self.params_pattern = r"\B---(.*)\B---\n?"
 
         self.raw_contents = Haumea.get_file_contents(self.input_filename)
         self.final_contents = re.sub(
             self.params_pattern, '', self.raw_contents, 0, re.DOTALL)
 
         self._params = self.get_params()
-        self.base_layout = Haumea.get_file_contents(os.path.join(layout_path, self.p("layout"))) if self.p('layout') else base_layout
-
         self.load_data_from_json()
         self.render_params()
+
+        self._taxonomies = self.get_taxonomies()
+        self.base_layout = Haumea.get_file_contents(os.path.join(layout_path, self.p("layout"))) if self.p('layout') else base_layout
 
         self.output_filename = self.get_output_filename()
         self.output_dirname = os.path.dirname(self.output_filename)
@@ -228,6 +236,18 @@ class Page():
         if self.p("shortcut"):
             p = self.p("shortcut")
         return p
+
+    def get_taxonomies(self):
+        res = {}
+        if self.p('taxonomies') and type(self._json) == dict:
+            res = self.p('taxonomies')
+        elif self.p('json-taxonomies') and type(self._json) == dict:
+            for t in self.p('json-taxonomies'):
+                if t['node'] and t['field']:
+                    res[t['node']] = list(map(lambda x: x[t['field']], self._json[t['node']]))
+                elif t['node']:
+                    res[t['node']] = self._json[t['node']]
+        return res
 
     def get_output_filename(self):
         # index.html
@@ -277,6 +297,7 @@ class Page():
                             fields_dict, root_node)
                     else:
                         self._json = fields_dict
+
                     te = time.time()
                     logging.info(
                         'Load json \U0001F52D  - {:s} request -'
@@ -298,6 +319,7 @@ class Page():
             'json-request-type': 'get',
             'json-headers': '',
             'json-root-node': '',
+            'json-taxonomies': '',
             'title': '',
             'nav-title': '',
             'meta-desc': '',
@@ -305,7 +327,8 @@ class Page():
             'meta-keywords': '',
             'slug': '',
             'menus': '',
-            'layout': ''
+            'layout': '',
+            'taxonomies': '',
         }
         matches = re.finditer(self.params_pattern,
                               self.raw_contents, re.DOTALL)
@@ -315,7 +338,7 @@ class Page():
         return result
 
     def render_params(self):
-        if self.p("json-source"):
+        if self._json:
             for p_key, p_value in self._params.items():
                 if isinstance(p_value, str) and p_value.startswith('{{'):
                     try:
@@ -342,7 +365,8 @@ class Page():
             '_menus': amenus,
             '_json': self._json,
             '_pages': pages,
-            '_params': self._params
+            '_params': self._params,
+            '_taxonomies': self._taxonomies
         }
         content = Template(self.final_contents).render(data)
 

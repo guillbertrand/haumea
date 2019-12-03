@@ -8,13 +8,13 @@
     <meta name="title" content="Haumea.io" />
     <title>Haumea.io - Documentation</title>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Lato:400,700,900|Lora:400,700,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/main.css?v=1575054169.913733">
+    <link rel="stylesheet" type="text/css" href="/main.css?v=1575389286.1869729">
 </head>
     <body class="">
         <div class="github"><a class="github-button" href="https://github.com/guillbertrand/haumea" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star guillbertrand/haumea on GitHub">Star</a></div>
         <div class="bg"></div>
         <header>
-    <h1 class="title"><a href="https://haumea.io">haumea<span>.io</span></a><small>0.6.6 beta</small></h1>
+    <h1 class="title"><a href="https://haumea.io">haumea<span>.io</span></a><small>0.6.8 beta</small></h1>
     <ul class="main"><li><a href="/">Home</a></li><li><a class="is-active" href="/documentation/">Docs</a></li><li><a href="https://github.com/guillbertrand/haumea">Github</a></li><li><a href="/about/">About</a></li></a>
 </header>
         <div id="content">
@@ -28,7 +28,7 @@
                 <li><span>pip</span> install haumea</li>
                 <li></li>
                 <li><span>haumea</span> -v</li>
-                <li>0.6.6</li>
+                <li>0.6.8</li>
                 <li></li>
             </ul>
         </div>
@@ -197,84 +197,87 @@
             <p><br/></p>
         <p><strong>Single page</strong> - Example <span>content/home.html</span></p>
         <div class="terminal w600 withoutbefore" >
-            <ul>
-                <li>&#45;&#45;&#45;</li>
-                <li>{</li>
-                <li>&emsp;"title":"Welcome home",</li>
-                <li>&emsp;"menus":["main", "footer"]</li>
-                <li>}</li>
-                <li>&#45;&#45;&#45;</li>
-            </ul>
+            <pre>
+---
+{
+    "title": "Welcome home",
+    "menus": ["main", "footer"],
+    "taxonomies": [{"tags": ["author", "book"]}]
+}
+---
+            </pre>
         </div>
         <p><strong>Single page</strong> from JSON or REST API - Example <span>content/page.html</span></p>
         <div class="terminal w600 withoutbefore" >
-            <ul>
-                <li>&#45;&#45;&#45;</li>
-                <li>{</li>
-                <li>&emsp;"json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/",</li>
-                <li>&emsp;"json-request-type" : "get",</li>
-                <li>&emsp;"json-params" : { "locale" : "fr" , "auth_token" : "XXXXXXX" },</li>
-                <li>&emsp;"json-root-node" : "data",</li>
-                <li></li>
-                <li>&emsp;"title" : "{{ _json.fields.title }} - {{ _json.fields.product_qty }}",</li>
-                <li>&emsp;"menus" : [ "main" ],</li>
-                <li>&emsp;"slug" : "test"</li>
-                <li>}</li>
-                <li>&#45;&#45;&#45;</li>
-            </ul>
+           <pre>
+---
+{
+    "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/",
+    "json-request-type" : "get",
+    "json-params" : { "locale" : "fr" , "auth_token" : "XXXXXXX" },
+    "json-root-node" : "data",
+
+    "title" : "{{ _json.fields.title }} - {{ _json.fields.product_qty }}",
+    "slug" : "test",
+
+    "menus" : [ "main" ]
+}
+---         
+           </pre>
         </div>
         <p><strong>Page bundle</strong> from JSON with GraphQL - Example <span>content/blog/_post.html</span></p>
         <p><span>"json-source"</span> data must return an array.<br/>
             Each element of the array will be used to generate a page<br/>
             The slug must be dynamic and unique <span>{{ _json.slug }}</span> </p>
         <div class="terminal w600 withoutbefore" >
-            <ul>
-                <li>&#45;&#45;&#45;</li>
-                <li>{</li>
-                <li>&emsp;"json-source" : "https://graphql.datocms.com/",,</li>
-                <li>&emsp;"json-request-type" : "graphql",</li>
-                <li>&emsp;"json-headers" : {"Authorization":"token xxxxxxx"},</li>
-                <li>&emsp;"json-root-node" : "data.allProduits",</li>
-                <li></li>
-                <li>&emsp;"title": "{{ _json.title }}",</li>
-                <li>&emsp;"nav-title": "Navigation Title !",</li>
-                <li>&emsp;"meta-desc" : "{{ _json.meta_description }}",</li>
-                <li>&emsp;"meta-title" : "{{ _json.meta_title }}",</li>
-                <li>&emsp;"slug" : "{{ _json.slug }}",</li>
-                <li></li>
-                <li>&emsp;"menus" : [ "products", "footer" ],</li>
-                <li>&emsp;"layout" : "layout.html" <span># Default "_base.html"</span></li>
-                <li>}</li>
-                <li>&#45;&#45;&#45;</li>
-            </ul>
+            <pre>
+---
+{
+    "json-source" : "https://graphql.datocms.com/",,
+    "json-request-type" : "graphql",
+    "json-headers" : {"Authorization":"token xxxxxxx"},
+    "json-root-node" : "data.allProduits",
+    "json-taxonomies": [ {"node":"category","field":"slug"} ],
+
+    "title": "{{ _json.title }}",
+    "nav-title": "Navigation Title !",
+    "meta-desc" : "{{ _json.meta_description }}",
+    "meta-title" : "{{ _json.meta_title }}",
+    "slug" : "{{ _json.slug }}",
+
+    "menus" : [ "products", "footer" ],
+    "layout" : "layout.html" <span># Default "_base.html"</span>
+}
+---
+            </pre>
         </div>
         <p>GraphQL file - Example <span>content/blog/_post.graphql</span></p>
         <div class="terminal w600 withoutbefore" >
-            <ul>
-                <li>query {</li>
-                <li>&emsp;launchesPast(limit: 80) {</li>
-                <li>&emsp;&emsp;mission_name</li>
-                <li>&emsp;&emsp;details</li>
-                <li>&emsp;&emsp;launch_date_local</li>
-                <li>&emsp;&emsp;ships {</li>
-                <li>&emsp;&emsp;&emsp;name</li>
-                <li>&emsp;&emsp;&emsp;image</li>
-                <li>&emsp;&emsp;}</li>
-                <li>&emsp;}</li>
-                <li>}</li>
-            </ul>
+            <pre>
+query {
+    launchesPast(limit: 80) {
+        mission_name
+        details
+        launch_date_local
+        ships {
+            name
+            image
+        }
+    }
+}
+            </pre>
         </div>
         <p>Shortcut page - Example with <span>content/.haumea.html</span></p>
         <div class="terminal w600 withoutbefore" >
-            <ul>
-                <li>&#45;&#45;&#45;</li>
-                <li>{</li>
-                <li>&emsp;"title":"Haumea.io",</li>
-                <li>&emsp;"menus" : [ "main:4" ],</li>
-                <li>&emsp;"shortcut" : "https://github.com/guillbertrand/haumea"</li>
-                <li>}</li>
-                <li>&#45;&#45;&#45;</li>
-            </ul>
+            <pre>
+---
+{
+    "title":"Haumea.io",
+    "menus" : [ "main:4" ],
+    "shortcut" : "https://github.com/guillbertrand/haumea"
+}
+---
+            </pre>
         </div>
         <h3 id="directorystructuresample">CLI</h3>
         <div class="terminal w600" >
