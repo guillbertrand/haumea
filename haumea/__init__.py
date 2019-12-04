@@ -9,6 +9,7 @@ import shutil
 import argparse
 import threading
 
+from dateutil.parser import parse
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
@@ -180,7 +181,11 @@ class TemplateEngine():
             pipes = expr.split("|")
             value = self.evaluate(pipes[0])
             for func in pipes[1:]:
-                value = func.format(value)
+                try:
+                    value = func.format(value)
+                except ValueError:
+                    value = parse(value)
+                    value = func.format(value)
         elif "." in expr:
             dots = expr.split('.')
             value = self.evaluate(dots[0])
@@ -197,7 +202,10 @@ class TemplateEngine():
                         dotint = int(dot)
                         value = value[dotint]
                     except ValueError:
-                        value = value[dot]
+                        try:
+                            value = value[dot]
+                        except KeyError:
+                            value = ''
 
                 if hasattr(value, '__call__'):
                     value = value()
@@ -219,8 +227,7 @@ class Page():
         self.params_pattern = r"\B---(.*)\B---\n?"
 
         self.raw_contents = Haumea.get_file_contents(self.input_filename)
-        self.final_contents = re.sub(
-            self.params_pattern, '', self.raw_contents, 0, re.DOTALL)
+        self.final_contents = re.sub(self.params_pattern, '', self.raw_contents, 0, re.DOTALL)
 
         self._params = self.get_params()
         self.load_data_from_json()
@@ -244,14 +251,15 @@ class Page():
 
     def get_taxonomies(self):
         res = {}
-        if self.p('taxonomies') and type(self._json) == dict:
-            res = self.p('taxonomies')
-        elif self.p('json-taxonomies') and type(self._json) == dict:
+        if self.p('json-taxonomies') and type(self._json) == dict:
             for t in self.p('json-taxonomies'):
                 if t['node'] and t['field']:
                     res[t['node']] = list(map(lambda x: x[t['field']], self._json[t['node']]))
                 elif t['node']:
                     res[t['node']] = self._json[t['node']]
+        if self.p('taxonomies'):
+            res = {**res, **self.p('taxonomies')}
+        logging.debug('Taxonomies {:s}:{:s}'.format(self.basename, str(res)))
         return res
 
     def get_output_filename(self):
@@ -497,8 +505,6 @@ class Haumea:
                     self.taxonomies[t][cat] = []
                 self.taxonomies[t][cat].append(page)
 
-        print('ok')
-        print(self.taxonomies)
         # sort menus
         for key, menu in self.menus.items():
             self.menus[key] = sorted(menu, key=lambda val: int(val[1]))
