@@ -185,6 +185,11 @@ class TemplateEngine():
             dots = expr.split('.')
             value = self.evaluate(dots[0])
             for dot in dots[1:]:
+                if dot.startswith('#'):
+                    if dot.replace('#', '') in self.context['_json']:
+                        dot = self.context['_json'][dot.replace('#', '')]
+                    elif dot.replace('#', '') in self.context['_params']:
+                        dot = self.context['_params'][dot.replace('#', '')]
                 try:
                     value = getattr(value, dot)
                 except AttributeError:
@@ -353,7 +358,7 @@ class Page():
             result = self.p('menus')
         return result
 
-    def render(self, menus, pages):
+    def render(self, menus, taxo, pages):
         amenus = {}
         for k, m in menus.items():
             amenus[k] = []
@@ -366,7 +371,7 @@ class Page():
             '_json': self._json,
             '_pages': pages,
             '_params': self._params,
-            '_taxonomies': self._taxonomies
+            '_taxonomies': taxo
         }
         content = Template(self.final_contents).render(data)
 
@@ -431,6 +436,7 @@ class Haumea:
 
     def __init__(self):
         self.menus = {}
+        self.taxonomies = {}
         self.cache = {}
         self.pages = []
         self.layout_base = ''
@@ -482,6 +488,17 @@ class Haumea:
             else:
                 self.menus[m] = [[page, weight]]
 
+        # add taxo
+        for t, v in page.get_taxonomies().items():
+            if t not in self.taxonomies:
+                self.taxonomies[t] = {}
+            for cat in v:
+                if cat not in self.taxonomies[t]:
+                    self.taxonomies[t][cat] = []
+                self.taxonomies[t][cat].append(page)
+
+        print('ok')
+        print(self.taxonomies)
         # sort menus
         for key, menu in self.menus.items():
             self.menus[key] = sorted(menu, key=lambda val: int(val[1]))
@@ -495,6 +512,7 @@ class Haumea:
     def build(self, with_cache=False):
         self.menus = {}
         self.pages = {}
+        self.taxonomies = {}
         self.layout_base = Haumea.get_file_contents(
             os.path.join(layout_path, '_base.html'))
 
@@ -546,7 +564,7 @@ class Haumea:
             if not os.path.exists(page.output_dirname):
                 os.makedirs(page.output_dirname)
             f = open(page.output_filename, "w")
-            f.write(page.render(self.menus, self.pages))
+            f.write(page.render(self.menus, self.taxonomies, self.pages))
             f.close()
             logging.info('\U00002728  Render page \U0001F527  %s' % (page.output_filename.replace(working_dir, '')))
 

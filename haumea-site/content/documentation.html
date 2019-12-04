@@ -130,6 +130,24 @@
                 <li>...</li>
             </ul>
         </div>
+        <p>Render page categorized in <span>news</span> for taxonomy named <span>category</span></p>
+        <div class="terminal w600 withoutbefore" >
+            <ul>
+                <li>'EXPR{% for page in _taxonomies.category.news %}</li>
+                <li>&emsp;&emsp;'EXPR{{ page.nav-title }}</li>
+                <li>'EXPR{% endfor %}</li>
+                <li></li>
+            </ul>
+        </div>
+        <p>Render page categorized in <span>#slug</span> (dynamic from _json or _params)</p>
+        <div class="terminal w600 withoutbefore" >
+            <ul>
+                <li>'EXPR{% for page in _taxonomies.category.#slug %}</li>
+                <li>&emsp;&emsp;'EXPR{{ page.nav-title }}</li>
+                <li>'EXPR{% endfor %}</li>
+                <li></li>
+            </ul>
+        </div>
         <p>Render permalink</p>
         <div class="terminal w600 withoutbefore" >
             <ul>
