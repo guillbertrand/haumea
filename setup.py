@@ -12,7 +12,7 @@ entry_points = {
 
 setuptools.setup(
     name="haumea",
-    version="0.6.9",
+    version="0.7.0",
     author="Guillaume Betrand",
     author_email="gbe.io@pm.me",
     description="Small & fast python library to build static websites",
@@ -24,6 +24,7 @@ setuptools.setup(
     entry_points=entry_points,
     install_requires=[
           'watchdog',
+          'python-dateutil'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -8,13 +8,13 @@
     <meta name="title" content="Haumea.io" />
     <title>Haumea.io - Documentation</title>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Lato:400,700,900|Lora:400,700,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/main.css?v=1575458235.4571068">
+    <link rel="stylesheet" type="text/css" href="/main.css?v=1575474539.1073449">
 </head>
     <body class="">
         <div class="github"><a class="github-button" href="https://github.com/guillbertrand/haumea" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star guillbertrand/haumea on GitHub">Star</a></div>
         <div class="bg"></div>
         <header>
-    <h1 class="title"><a href="https://haumea.io">haumea<span>.io</span></a><small>0.6.9 beta</small></h1>
+    <h1 class="title"><a href="https://haumea.io">haumea<span>.io</span></a><small>0.7.0 beta</small></h1>
     <ul class="main"><li><a href="/">Home</a></li><li><a class="is-active" href="/documentation/">Docs</a></li><li><a href="https://github.com/guillbertrand/haumea">Github</a></li><li><a href="/about/">About</a></li></a>
 </header>
         <div id="content">
@@ -28,7 +28,7 @@
                 <li><span>pip</span> install haumea</li>
                 <li></li>
                 <li><span>haumea</span> -v</li>
-                <li>0.6.9</li>
+                <li>0.7.0</li>
                 <li></li>
             </ul>
         </div>
@@ -121,12 +121,14 @@
                 <li><span>&ltstrong&gt</span>{{ _json.regular_price|{:.2f} }}<span>&lt/strong&gt</span></li>
                 <li></li>
                 <li>{% if  _json.regular_price > 10.0 %}</li>
-                <li>&emsp;&emsp;<span>&ltspan&gt</span>Price :<span>&lt/span&gt</span>{{ _json.regular_price|{:.2f} }}</li>
+                <li>&emsp;&emsp;<span>&ltspan&gt</span>Price : <span>&lt/span&gt</span>{{ _json.regular_price|{:.2f} }}</li>
                 <li>{% endif %}</li>
                 <li></li>
                 <li>{% for tag in _json.data.tags %}</li>
-                <li>&emsp;&emsp;<span>&ltspan&gt</span>Tags :<span>&lt/span&gt</span>{{ tag }}</li>
+                <li>&emsp;&emsp;<span>&lta&gt</span>{{ tag }}<span>&lt/a&gt</span></li>
                 <li>{% endfor %}</li>
+                <li></li>
+                <li><span>&ltdiv&gt</span>Date : {{ _json.createdAt|{:%Y-%m-%d} }}<span>&lt/div&gt</span></li>
             </ul>
         </div>
         <p>Render current page params</p>
@@ -213,14 +215,17 @@
             Page bundle : <span>_example.html</span></br> 
             Shortcut page : <span>.example.html</span><br/></p>
             <p><br/></p>
-        <p><strong>Single page</strong> - Example <span>content/home.html</span></p>
+        <p><strong>Single page</strong> - Example <span>content/event.html</span></p>
         <div class="terminal w600 withoutbefore" >
             <pre>
 ---
 {
-    "title": "Welcome home",
+    "title": "My first content",
     "menus": ["main", "footer"],
-    "taxonomies": [{"tags": ["author", "book"]}]
+    "taxonomies": {
+        "tags": ["birthday", "party"],
+        "types": ["event"]
+    }
 }
 ---
             </pre>

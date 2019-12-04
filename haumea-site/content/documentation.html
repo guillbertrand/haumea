@@ -111,12 +111,14 @@
                 <li><span>&ltstrong&gt</span>'EXPR{{ _json.regular_price|{:.2f} }}<span>&lt/strong&gt</span></li>
                 <li></li>
                 <li>'EXPR{% if  _json.regular_price > 10.0 %}</li>
-                <li>&emsp;&emsp;<span>&ltspan&gt</span>Price :<span>&lt/span&gt</span>'EXPR{{ _json.regular_price|{:.2f} }}</li>
+                <li>&emsp;&emsp;<span>&ltspan&gt</span>Price : <span>&lt/span&gt</span>'EXPR{{ _json.regular_price|{:.2f} }}</li>
                 <li>'EXPR{% endif %}</li>
                 <li></li>
                 <li>'EXPR{% for tag in _json.data.tags %}</li>
-                <li>&emsp;&emsp;<span>&ltspan&gt</span>Tags :<span>&lt/span&gt</span>'EXPR{{ tag }}</li>
+                <li>&emsp;&emsp;<span>&lta&gt</span>'EXPR{{ tag }}<span>&lt/a&gt</span></li>
                 <li>'EXPR{% endfor %}</li>
+                <li></li>
+                <li><span>&ltdiv&gt</span>Date : 'EXPR{{ _json.createdAt|{:%Y-%m-%d} }}<span>&lt/div&gt</span></li>
             </ul>
         </div>
         <p>Render current page params</p>
@@ -203,14 +205,17 @@
             Page bundle : <span>_example.html</span></br> 
             Shortcut page : <span>.example.html</span><br/></p>
             <p><br/></p>
-        <p><strong>Single page</strong> - Example <span>content/home.html</span></p>
+        <p><strong>Single page</strong> - Example <span>content/event.html</span></p>
         <div class="terminal w600 withoutbefore" >
             <pre>
 'EXPR---
 {
-    "title": "Welcome home",
+    "title": "My first content",
     "menus": ["main", "footer"],
-    "taxonomies": [{"tags": ["author", "book"]}]
+    "taxonomies": {
+        "tags": ["birthday", "party"],
+        "types": ["event"]
+    }
 }
 'EXPR---
             </pre>
