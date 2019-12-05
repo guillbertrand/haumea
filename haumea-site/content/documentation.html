@@ -13,7 +13,7 @@
     <section>
         <h2 id="installation">Installation </h2>
         <p>haumea requires <span><a href="https://www.python.org/downloads/">python</a> {{ _json.requires_python }}</span><br/></p>
-        <div class="terminal">
+        <div class="terminal cli">
             <ul>
                 <li><span>pip</span> install haumea</li>
                 <li></li>
@@ -26,7 +26,7 @@
     <section>
         <h2 id="quickstart">Quickstart</h2>
         <p>You can create a skeleton project with the <strong>haumea-quickstart</strong> command</p>
-        <div class="terminal">
+        <div class="terminal cli">
             <ul>
                 <li><span>haumea-quickstart</span> my-project</li>
                 <li></li>
@@ -48,7 +48,7 @@
             </ul>
         </div>
         <p><strong>haumea build</strong> performs a build of your site to <span>./public</span> (by default)</p>
-        <div class="terminal">
+        <div class="terminal cli">
             <ul>
                 <li>cd my-project</li>
                 <li><span>haumea</span> build</li>
@@ -56,7 +56,7 @@
             </ul>
         </div>
         <p><strong>haume serve</strong> builds your site any time a source file changes ans serves it locally.<br/>All external data from <span>json-source</span> are cached.</p>
-        <div class="terminal">
+        <div class="terminal cli">
             <ul>
                 <li>cd my-project</li>
                 <li><span>haumea</span> serve</li>
@@ -94,7 +94,7 @@
         </div>
         <h3 id="directorystructuresample">Layouts templating tags</h3>
         <p><span>./layouts/*</span></p>
-        <div class="terminal w600 withoutbefore" >
+        <div class="terminal w600 withoutbefore html" >
             <ul>
                 <li>'EXPR{{ _content }} <span># render your content into template</span></li>
                 <li></li>
@@ -105,7 +105,7 @@
         <h3 id="directorystructuresample">Contents templating tags</h3>
         <p><span>./content/*</span></p>
         <p>Render json content (from your RESTful or GraphQL API)</p>
-        <div class="terminal w600 withoutbefore" >
+        <div class="terminal w600 withoutbefore html" >
             <ul>
                 <li>'EXPR{{ _json.short_title }}</li>
                 <li><span>&ltstrong&gt</span>'EXPR{{ _json.regular_price|{:.2f} }}<span>&lt/strong&gt</span></li>
@@ -122,7 +122,7 @@
             </ul>
         </div>
         <p>Render current page params</p>
-        <div class="terminal w600 withoutbefore" >
+        <div class="terminal w600 withoutbefore html" >
             <ul>
                 <li>'EXPR{{ _params.title }}</li>
                 <li>'EXPR{{ _params.nav-title }}</li>
@@ -133,7 +133,7 @@
             </ul>
         </div>
         <p>Render page categorized in <span>news</span> for taxonomy named <span>category</span></p>
-        <div class="terminal w600 withoutbefore" >
+        <div class="terminal w600 withoutbefore html" >
             <ul>
                 <li>'EXPR{% for page in _taxonomies.category.news %}</li>
                 <li>&emsp;&emsp;'EXPR{{ page.nav-title }}</li>
@@ -142,7 +142,7 @@
             </ul>
         </div>
         <p>Render page categorized in <span>#slug</span> (dynamic from _json or _params)</p>
-        <div class="terminal w600 withoutbefore" >
+        <div class="terminal w600 withoutbefore html" >
             <ul>
                 <li>'EXPR{% for page in _taxonomies.category.#slug %}</li>
                 <li>&emsp;&emsp;'EXPR{{ page.nav-title }}</li>
@@ -151,7 +151,7 @@
             </ul>
         </div>
         <p>Render permalink</p>
-        <div class="terminal w600 withoutbefore" >
+        <div class="terminal w600 withoutbefore html" >
             <ul>
                 <li>'EXPR{% link "about.html" %}  </li>
                 <li>'EXPR{% link "/blog/post-2020.html#more" %}</li>
@@ -160,13 +160,13 @@
             </ul>
         </div>
         <p>Render datetime</p>
-        <div class="terminal w600 withoutbefore" >
+        <div class="terminal w600 withoutbefore html" >
             <ul>
                 <li>'EXPR{% time %} <span># Output current timestamp</span></li>
             </ul>
         </div>
         <p>Basic & advanced menu rendering</p>
-        <div class="terminal w600 withoutbefore" >
+        <div class="terminal w600 withoutbefore html" >
             <ul>
                 <li>'EXPR{% menu <span>mymainmenu</span> %}</li>
                 <li>
@@ -206,7 +206,7 @@
             Shortcut page : <span>.example.html</span><br/></p>
             <p><br/></p>
         <p><strong>Single page</strong> - Example <span>content/event.html</span></p>
-        <div class="terminal w600 withoutbefore" >
+        <div class="terminal w600 withoutbefore json" >
             <pre>
 'EXPR---
 {
@@ -221,7 +221,7 @@
             </pre>
         </div>
         <p><strong>Single page</strong> from JSON or REST API - Example <span>content/page.html</span></p>
-        <div class="terminal w600 withoutbefore" >
+        <div class="terminal w600 withoutbefore json" >
            <pre>
 'EXPR---
 {
@@ -242,7 +242,7 @@
         <p><span>"json-source"</span> data must return an array.<br/>
             Each element of the array will be used to generate a page<br/>
             The slug must be dynamic and unique <span>'EXPR{{ _json.slug }}</span> </p>
-        <div class="terminal w600 withoutbefore" >
+        <div class="terminal w600 withoutbefore json" >
             <pre>
 'EXPR---
 {
@@ -281,7 +281,7 @@ query {
             </pre>
         </div>
         <p>Shortcut page - Example with <span>content/.haumea.html</span></p>
-        <div class="terminal w600 withoutbefore" >
+        <div class="terminal w600 withoutbefore json" >
             <pre>
 'EXPR---
 {
@@ -293,7 +293,7 @@ query {
             </pre>
         </div>
         <h3 id="directorystructuresample">CLI</h3>
-        <div class="terminal w600" >
+        <div class="terminal w600 cli" >
                 <ul>
                     <li><span>haumea-quickstart</span> my-project</li>
                     <li></li>
