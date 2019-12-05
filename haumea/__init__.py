@@ -358,7 +358,7 @@ class Page():
                         tpl = Template(p_value)
                         self._params[p_key] = tpl.render({'_json': self._json})
                     except BaseException:
-                        pass
+                        self._params[p_key] = ''
 
     def get_menus(self):
         result = []
