@@ -13,6 +13,13 @@ from dateutil.parser import parse
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
+_QUICKSTART_PATH = os.path.join(
+    os.path.dirname(
+        os.path.abspath(__file__)
+    ),
+    'quickstart'
+)
+
 try:
     __version__ = __import__('pkg_resources') \
         .get_distribution('haumea').version
@@ -44,7 +51,7 @@ class Template():
                 if words[0] == 'if':
                     # If: ('if', (expr, body_ops))
                     if_ops = []
-                    assert len(words) == 2 or len(words) == 4
+                    assert len(words) >= 2 or len(words) <= 4
                     ops.append(('if', (words, if_ops)))
                     ops_stack.append(ops)
                     ops = if_ops
@@ -111,13 +118,16 @@ class TemplateEngine():
                     raise new_exc
             elif op == 'if':
                 expr, body = args
-                if self.evaluate(expr[1]):
-                    if len(expr) == 2:
+                if len(expr) == 2:
+                    if self.evaluate(expr[1]):
                         self.execute(body)
-                    elif len(expr) == 4:
-                        res = eval('("%s" %s %s)' % (self.evaluate(expr[1]), expr[2], expr[3]))
-                        if res:
-                            self.execute(body)
+                elif len(expr) == 3 and expr[1] == "not":
+                    if not self.evaluate(expr[2]):
+                        self.execute(body)
+                elif len(expr) == 4:
+                    res = eval('("%s" %s %s)' % (self.evaluate(expr[1]), expr[2], expr[3]))
+                    if res:
+                        self.execute(body)
             elif op == 'for':
                 var, lis, body = args
                 vals = self.evaluate(lis)
@@ -253,10 +263,16 @@ class Page():
         res = {}
         if self.p('json-taxonomies') and type(self._json) == dict:
             for t in self.p('json-taxonomies'):
-                if t['node'] and t['field']:
-                    res[t['node']] = list(map(lambda x: x[t['field']], self._json[t['node']]))
-                elif t['node']:
-                    res[t['node']] = self._json[t['node']]
+                if 'node' in t and 'field' in t:
+                    if type(self._json[t['node']]) == list:
+                        res[t['node']] = list(map(lambda x: x[t['field']], self._json[t['node']]))
+                    elif self._json[t['node']]:
+                        res[t['node']] = [self._json[t['node']][t['field']]]
+                elif 'node' in t:
+                    if type(self._json[t['node']]) == list:
+                        res[t['node']] = self._json[t['node']]
+                    else:
+                        res[t['node']] = [self._json[t['node']]]
         if self.p('taxonomies'):
             res = {**res, **self.p('taxonomies')}
         logging.debug('Taxonomies {:s}:{:s}'.format(self.basename, str(res)))
@@ -274,7 +290,7 @@ class Page():
         # slug with params
         else:
             slug = str(self.p('slug')).replace(
-                '/', '').replace(' ', '-')  # TODO slugify
+                '/', '').strip().replace(' ', '-')  # TODO slugify
             output_filename = os.path.join(output_path, self.basedirname, slug, "index.html")
         return output_filename
 
@@ -327,19 +343,20 @@ class Page():
         return res
 
     def get_params(self):
+        result = {}
         base = {
             'json-source': '',
             'json-request-type': 'get',
-            'json-headers': '',
+            'json-headers': {},
             'json-root-node': '',
-            'json-taxonomies': '',
+            'json-taxonomies': [],
             'title': '',
             'nav-title': '',
             'meta-desc': '',
             'meta-title': '',
             'meta-keywords': '',
             'slug': '',
-            'menus': '',
+            'menus': [],
             'layout': '',
             'taxonomies': '',
         }
@@ -347,7 +364,8 @@ class Page():
                               self.raw_contents, re.DOTALL)
         for matchNum, match in enumerate(matches, start=1):
             yml = match.group(1)
-            result = {**base, **json.loads(yml)}
+            js = json.loads(yml)
+            result = {**base, **js}
         return result
 
     def render_params(self):
@@ -594,7 +612,11 @@ def haumea_parse_args():
 a build of your site to ./public (by default) 
 
 "haumea serve" or "haumea s" builds your site 
-any time a source file changes ans serves it locally''')
+any time a source file changes ans serves it locally
+
+"haumea add content.html" create file with all config params''')
+    parser.add_argument('filename', default="blank.html", type=str, nargs="?",
+                        help="Filename of your content")
     parser.add_argument('-p', '--port', default=8000, type=int, nargs="?",
                         help="Port to Listen On")
     parser.add_argument('-o', '--output', default='public/',
@@ -661,3 +683,6 @@ def main():
         h.build()
         t1.start()
         t2.start()
+    elif action == "add" and args.filename:
+        if not os.path.exists(args.filename):
+            shutil.copyfile(os.path.join(_QUICKSTART_PATH, "content/sample.html"), args.filename)
