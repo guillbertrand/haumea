@@ -105,8 +105,24 @@ h1 small {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     display: block;
-    padding: 5px;
+    padding: 3px 10px;
     content:'';
+    text-align: right;
+    color:lightgray;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 12px;
+}
+
+.terminal.json::before {
+    content:'json'
+}
+
+.terminal.html::before {
+    content:'html'
+}
+
+.terminal.cli::before {
+    content:''
 }
 
 .terminal ul {
