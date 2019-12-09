@@ -614,7 +614,7 @@ a build of your site to ./public (by default)
 "haumea serve" or "haumea s" builds your site 
 any time a source file changes ans serves it locally
 
-"haumea add content.html" create file with all config params''')
+"haumea add content.html" create a blank file contant with all config params''')
     parser.add_argument('filename', default="blank.html", type=str, nargs="?",
                         help="Filename of your content")
     parser.add_argument('-p', '--port', default=8000, type=int, nargs="?",
