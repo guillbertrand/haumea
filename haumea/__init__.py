@@ -59,6 +59,9 @@ class Template():
                     # Include: ('include', filename)
                     assert len(words) == 2
                     ops.append(('include', words[1]))
+                elif words[0] == 'pagination':
+                    assert len(words) == 1 or len(words) == 2
+                    ops.append(('pagination', words))
                 elif words[0] == 'for':
                     # For: ('for', (varname, listexpr, body_ops))
                     assert len(words) == 4 and words[2] == 'in'
@@ -138,6 +141,12 @@ class TemplateEngine():
                 filename = os.path.join(layout_path, args.replace('"', ''))
                 tpl = Template(Haumea.get_file_contents(filename))
                 self.result.append(tpl.render(self.context))
+            elif op == 'pagination':
+                filename = '_pagination.html' if len(args) == 1 else args[1]
+                filename = os.path.join(layout_path, filename.replace('"', ''))
+                tpl = Template(Haumea.get_file_contents(filename))
+                if len(self.context['_pagination']['pages']) > 1:
+                    self.result.append(tpl.render({'pagination': self.context['_pagination']}))
             elif op == 'menu':
                 value = ''
                 node = {0: ['a', '', ''], 1: ['li', '', ''], 2: ['ul', '', '']}
@@ -251,6 +260,8 @@ class Page():
         self.permalink = self.get_permalink()
         self.is_shortcut = self.p("shortcut")
 
+        self.current_page_index = 1
+
     def get_permalink(self):
         p = self.output_filename.replace(output_path, '').replace('index.html', '')
         if not p.startswith('/'):
@@ -278,20 +289,50 @@ class Page():
         logging.debug('Taxonomies {:s}:{:s}'.format(self.basename, str(res)))
         return res
 
-    def get_output_filename(self):
+    def get_pagination(self, json_data, pagination_index=0):
+        pagination = {
+            'isFirst': False,
+            'isLast': False,
+            'pages': [],
+            'current': []
+        }
+        if self.p('paginate'):
+            data = Haumea.get_data_from_json(json_data, self.p('paginate'))
+            conf_paginate = config['paginate']
+            for i, start in enumerate(range(0, len(data), conf_paginate)):
+                pagination['pages'].append({
+                        'index': i+1,
+                        'permalink': self.get_output_filename(i+1).replace(output_path, '/'),
+                        'content': data[start:start+conf_paginate]
+                    }
+                )
+                pagination['isFirst'] = (pagination_index == 1)
+                if i+1 == pagination_index:
+                    pagination['current'] = data[start:start+conf_paginate]
+
+            pagination['isLast'] = (pagination_index == i+1)
+            pagination['Prev'] = self.get_output_filename(pagination_index-1).replace(output_path, '/')
+            pagination['Next'] = self.get_output_filename(pagination_index+1).replace(output_path, '/')
+        return pagination
+
+    def get_output_filename(self, pagination_index=0):
+        conf_paginate_path = config['paginate-path']
+        if not pagination_index:
+            if self.p('paginate'):
+                pagination_index = 1
+        pagination_slug = '' if not pagination_index else '%s-%d' % (conf_paginate_path, pagination_index)
         # index.html
         if self.basename == 'index.html':
-            output_filename = os.path.join(
-                output_path, self.basedirname, 'index.html')
+            output_filename = os.path.join(output_path, self.basedirname, pagination_slug, 'index.html')
         # slug with basename
         elif self.basename[0] != '_' and not self.p('slug'):
             output_filename = os.path.join(
-                output_path, self.basedirname, os.path.splitext(self.basename)[0], "index.html")
+                output_path, self.basedirname, os.path.splitext(self.basename)[0], pagination_slug,  "index.html")
         # slug with params
         else:
             slug = str(self.p('slug')).replace(
                 '/', '').strip().replace(' ', '-')  # TODO slugify
-            output_filename = os.path.join(output_path, self.basedirname, slug, "index.html")
+            output_filename = os.path.join(output_path, self.basedirname, slug, pagination_slug, "index.html")
         return output_filename
 
     def load_data_from_json(self):
@@ -359,6 +400,7 @@ class Page():
             'menus': [],
             'layout': '',
             'taxonomies': '',
+            'paginate': ''
         }
         matches = re.finditer(self.params_pattern,
                               self.raw_contents, re.DOTALL)
@@ -371,7 +413,7 @@ class Page():
     def render_params(self):
         if self._json:
             for p_key, p_value in self._params.items():
-                if isinstance(p_value, str) and p_value.startswith('{{'):
+                if isinstance(p_value, str) and '{{' in p_value:
                     try:
                         tpl = Template(p_value)
                         self._params[p_key] = tpl.render({'_json': self._json})
@@ -385,6 +427,7 @@ class Page():
         return result
 
     def render(self, menus, taxo, pages):
+        index = 0
         amenus = {}
         for k, m in menus.items():
             amenus[k] = []
@@ -397,12 +440,23 @@ class Page():
             '_json': self._json,
             '_pages': pages,
             '_params': self._params,
-            '_taxonomies': taxo
+            '_taxonomies': taxo,
         }
-        content = Template(self.final_contents).render(data)
 
-        data['_content'] = content
-        return Template(self.base_layout).render(data)
+        data['_pagination'] = self.get_pagination(data, index)
+        # single page
+        if not len(data['_pagination']['pages']):
+            data['_content'] = Template(self.final_contents).render(data)
+            yield Template(self.base_layout).render(data)
+        # multiple pages
+        else:
+            for page in data['_pagination']['pages']:
+                index += 1
+                self.output_filename = self.get_output_filename(index)
+                self.output_dirname = os.path.dirname(self.output_filename)
+                data['_pagination'] = self.get_pagination(data, index)
+                data['_content'] = Template(self.final_contents).render(data)
+                yield Template(self.base_layout).render(data)
 
 #
 
@@ -549,7 +603,7 @@ class Haumea:
             for filename in files:
                 fn = os.path.join(root, filename)
                 json = self.cache[fn] if with_cache and fn in self.cache else {}
-                # static page & shortcut page
+                # simple page & shortcut page
                 if os.path.splitext(filename)[1] == '.html' and (filename[0] != '_' or filename[0] == '.'):
                     page = Page(fn, self.layout_base, json)
                     self.add(page)
@@ -585,12 +639,13 @@ class Haumea:
         for page in self.pages.values():
             if page.is_shortcut:
                 continue
-            if not os.path.exists(page.output_dirname):
-                os.makedirs(page.output_dirname)
-            f = open(page.output_filename, "w")
-            f.write(page.render(self.menus, self.taxonomies, self.pages))
-            f.close()
-            logging.info('\U00002728  Render page \U0001F527  %s' % (page.output_filename.replace(working_dir, '')))
+            for page_content in page.render(self.menus, self.taxonomies, self.pages):
+                if not os.path.exists(page.output_dirname):
+                    os.makedirs(page.output_dirname)
+                f = open(page.output_filename, "w")
+                f.write(page_content)
+                f.close()
+                logging.info('\U00002728  Render page \U0001F527  %s' % (page.output_filename.replace(working_dir, '')))
 
         te = time.time()
         nb = len(self.pages)
@@ -644,12 +699,32 @@ any time a source file changes ans serves it locally
 #
 
 
+def get_config():
+    global working_dir
+    config = {
+        'paginate': 10,
+        'paginate-path': 'page'
+    }
+    config_file = os.path.join(working_dir, 'config.json')
+    if os.path.exists(config_file):
+        filecontent = Haumea.get_file_contents(config_file)
+        try:
+            config = {**config, **json.loads(filecontent)}
+            logging.debug('Config file content : %s' % filecontent)
+        except BaseException:
+            logging.warning('Unable to parse json config file : %s' % config_file)
+    return config
+
+#
+
+
 def main():
     global working_dir
     global input_path
     global output_path
     global layout_path
     global static_path
+    global config
 
     args = haumea_parse_args()
     action = args.action
@@ -669,6 +744,7 @@ def main():
     FORMAT = '* %(levelname)s - %(message)s'
     logging.basicConfig(level=args.verbosity, format=FORMAT)
 
+    config = get_config()
     h = Haumea()
     if action in ["build", "b"]:
         h.build()

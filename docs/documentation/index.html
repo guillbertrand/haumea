@@ -10,13 +10,13 @@
     
     <title>Documentation</title>
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Lato:400,700,900|Lora:400,700,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/main.css?v=1575901042.2691689">
+    <link rel="stylesheet" type="text/css" href="/main.css?v=1576007956.4505532">
 </head>
     <body class="">
         <div class="github"><a class="github-button" href="https://github.com/guillbertrand/haumea" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star guillbertrand/haumea on GitHub">Star</a></div>
         <div class="bg"></div>
         <header>
-    <h1 class="title"><a href="https://haumea.io">haumea<span>.io</span></a><small>0.7.2 beta</small></h1>
+    <h1 class="title"><a href="https://haumea.io">haumea<span>.io</span></a><small>0.7.4 beta</small></h1>
     <ul class="main"><li><a href="/">Home</a></li><li><a class="is-active" href="/documentation/">Docs</a></li><li><a href="https://github.com/guillbertrand/haumea">Github</a></li><li><a href="/about/">About</a></li></a>
 </header>
         <div id="content">
@@ -30,7 +30,7 @@
                 <li><span>pip</span> install haumea</li>
                 <li></li>
                 <li><span>haumea</span> -v</li>
-                <li>0.7.2</li>
+                <li>0.7.4</li>
                 <li></li>
             </ul>
         </div>
@@ -182,7 +182,7 @@
             <ul>
                 <li>{% menu <span>mymainmenu</span> %}</li>
                 <li>
-                    <xmp>
+                    <xmp class="html">
 <ul>
     <li><a href="">item 1</a></li>
     <li><a href="">item 2</a></li>
@@ -192,7 +192,7 @@
                 <li></li>
                 <li>{% menu <span>footermenu</span> a.item %}</li>
                 <li>
-                    <xmp>
+                    <xmp class="html">
 <ul>
     <li><a class="item" href="">item 1</a></li>
     <li><a class="item" href="">item 2</a></li>
@@ -201,7 +201,7 @@
                 </xmp></li>
                 <li>{% menu <span>mycustommenu</span> nav.menu>div.item>a.link.is-active %}</li>
                 <li>
-                    <xmp>
+                    <xmp class="html">
 <nav>
     <div><a class="link is-active" href="">item 1</a></div>
     <div><a class="link" href="">item 2</a></div>
@@ -299,12 +299,88 @@ query {
 {
     "title":"Haumea.io",
     "menus" : [ "main:4" ],
-    "shortcut" : "https://github.com/guillbertrand/haumea"
+    "paginate" : "https://github.com/guillbertrand/haumea"
 }
 ---
-            </pre>
+</pre>
         </div>
     </section>
+    <section>
+            <h2 id="installation">Pagination </h2>
+            <p>haumea supports pagination for your external data from json, RESTful API, GraphQL<br/>
+            You must specify the config field <span>paginate</span> to activate pagination on your content.<br/>
+            </p>
+            <p>The templating tag <span>{% pagination %}</span> allow you to render pagination.<br/>
+            By default the following template is used : <span>layouts/_pagination.html</span><br/>
+        </p>
+            <p>Exemple #1</p>
+            <div class="terminal w600 withoutbefore html" >
+                    <xmp>---
+{
+    "json-source" : "/data/posts.json",
+
+    "title":"Haumea.io",
+    "menus" : [ "main:4" ],
+
+    "paginate": "_json.posts"
+}
+---
+<div class="container">
+    
+        {% for p in _pagination.current %}
+            <div class="card">
+                <a href="{{ p.permalink }}">{{ p._params.nav-title }}</a>
+                <div class="content">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                
+                    {% for tag in p._taxonomies.category %}
+                        <a href="/categories/{{ tag }}/">#{{ tag }}</a>
+                    {% endfor %}
+                    
+                    <time datetime="2016-1-1">{{ p._json.createdAt|{:%d-%m-%Y} }}</time>
+                </div>
+            </div>
+        {% endfor %}         
+    
+    {% pagination %}
+</div></xmp>
+
+</div>
+<p>Exemple #2</p>
+<div class="terminal w600 withoutbefore html" >
+        <xmp>---
+{
+    "json-source" : "/data/posts.json",
+
+    "title":"Haumea.io",
+    "menus" : [ "main:4" ],
+
+    "taxonomies": {
+        "category": ["health", "news"],
+        "types": ["post"]
+    },
+
+    "paginate": "_taxonomies.types.{{ _json.slug }}"
+}
+---
+<div>
+        {% for p in _pagination.current %}
+            {{ p._json.title }}
+        {% endfor %}      
+
+        {% pagination "custom/pagination.html" %}
+</div></xmp>
+</div>
+<p>You can override default config param in your <span>config.json</span> file</p>
+<div class="terminal w600 withoutbefore json" >
+        <xmp>
+{
+    "paginate" : 20,        # default value : 10
+    "paginate-path" : "p",  # default value : "page"
+}
+        </xmp>
+</div>
+        </section>
 </div>
 
         </div>
