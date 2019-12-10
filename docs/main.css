@@ -136,7 +136,7 @@ h1 small {
     border-bottom-right-radius: 5px;
 }
 
-pre {
+pre, xmp {
     padding: 5px;
     margin: 0px;
     background-color: #182533;
@@ -149,7 +149,7 @@ pre {
     line-height: 22px;
 }
 
-xmp {
+xmp.html {
     color:#fff;
     font-family: 'Noto Sans', sans-serif;
     font-size: 12px;
@@ -190,12 +190,6 @@ xmp {
     color: #4c535c;
     margin-right: 10px;
 }
-
-xmp::before {
-    content: '';
-    margin: 0;
-}
-
 
 ul.main {
     display: flex;

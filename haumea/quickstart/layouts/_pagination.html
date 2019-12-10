@@ -1,0 +1,15 @@
+<nav class="pagination is-centered" role="navigation" aria-label="pagination">
+    <ul class="pagination-list">
+        {% if not pagination.isFirst %}
+            <li class="previous"><a href="{{ pagination.Prev }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+        {% endif %}        
+        
+        {% for page in pagination.pages %}
+                <li><a class="pagination-link" href="{{ page.permalink }}">{{ page.index }}</a></li>
+        {% endfor %}
+        
+        {% if not pagination.isLast %}
+            <li class="next" aria-label="Next"><a href="{{ pagination.Next }}"><span aria-hidden="true">&raquo;</span></a></li>
+        {% endif %}    
+    </ul>
+</nav>
