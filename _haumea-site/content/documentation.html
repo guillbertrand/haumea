@@ -115,6 +115,11 @@
                 <li>&emsp;&emsp;<span>&lta&gt</span>'EXPR{{ tag }}<span>&lt/a&gt</span></li>
                 <li>'EXPR{% endfor %}</li>
                 <li></li>
+                <li><span># Iter only the first 10 elements of the table of _json.data.tags array</span></li>
+                <li>'EXPR{% for tag in _json.data.tags :10 %} <span>Slice a sequence "start:end:step"</span></li>
+                <li>&emsp;&emsp;<span>&lta&gt</span>'EXPR{{ tag }}<span>&lt/a&gt</span></li>
+                <li>'EXPR{% endfor %}</li>
+                <li></li>
                 <li><span>&ltdiv&gt</span>Date : 'EXPR{{ _json.createdAt|{:%Y-%m-%d} }}<span>&lt/div&gt</span></li>
             </ul>
         </div>

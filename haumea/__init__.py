@@ -67,10 +67,12 @@ class Template():
                     assert len(words) == 1 or len(words) == 2
                     ops.append(('pagination', words))
                 elif words[0] == 'for':
-                    # For: ('for', (varname, listexpr, body_ops))
-                    assert len(words) == 4 and words[2] == 'in'
+                    # For: ('for', (varname, listexpr, body_ops, slice))
+                    assert (len(words) == 4 or len(words) == 5) and words[2] == 'in'
                     for_ops = []
-                    ops.append(('for', (words[1], words[3], for_ops)))
+                    if len(words) == 4:
+                        words.append(None)
+                    ops.append(('for', (words[1], words[3], for_ops, words[4])))
                     ops_stack.append(ops)
                     ops = for_ops
                 elif words[0].startswith('end'):
@@ -136,8 +138,12 @@ class TemplateEngine():
                     if res:
                         self.execute(body)
             elif op == 'for':
-                var, lis, body = args
+                var, lis, body, slice_str = args
                 vals = self.evaluate(lis)
+                if(slice_str):
+                    slice_item = slice_str.split(':')
+                    slice_res = [int(slice_item[i]) if i < len(slice_item) and slice_item[i] else None for i in range(3)]
+                    vals = vals[slice(*slice_res)]
                 for val in vals:
                     self.context[var] = val
                     self.execute(body)
