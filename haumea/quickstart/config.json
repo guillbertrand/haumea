@@ -1,15 +1,12 @@
 {
+    "locale" : "en_US",
+    "site-name" : "My Website",
     "paginate" : 10,
     "paginate-path" : "page",
+
     "env" : {
-        "prod" : {
-            "site-url" : "prod.mywebsite.com"
-        },
-        "staging" : {
-            "site-url" : "staging.mywebsite.com"
-        },
         "test" : {
-            "site-url" : "test.mywebsite.com"
+            "site-url" : "http://localhost:8000"
         }
     }
 }

@@ -55,6 +55,10 @@ class Template():
                     ops.append(('if', (words, if_ops)))
                     ops_stack.append(ops)
                     ops = if_ops
+                elif words[0] == 'haumea':
+                    # Render Haumea version
+                    assert len(words) == 1
+                    ops.append(('haumea', words))
                 elif words[0] == 'include':
                     # Include: ('include', filename)
                     assert len(words) == 2
@@ -141,6 +145,8 @@ class TemplateEngine():
                 filename = os.path.join(layout_path, args.replace('"', ''))
                 tpl = Template(Haumea.get_file_contents(filename))
                 self.result.append(tpl.render(self.context))
+            elif op == 'haumea':
+                self.result.append(__version__)
             elif op == 'pagination':
                 filename = '_pagination.html' if len(args) == 1 else args[1]
                 filename = os.path.join(layout_path, filename.replace('"', ''))
@@ -396,6 +402,7 @@ class Page():
             'meta-desc': '',
             'meta-title': '',
             'meta-keywords': '',
+            'meta-robots': 'index, follow',
             'slug': '',
             'menus': [],
             'layout': '',
@@ -441,6 +448,7 @@ class Page():
             '_pages': pages,
             '_params': self._params,
             '_taxonomies': taxo,
+            '_config': config
         }
 
         data['_pagination'] = self.get_pagination(data, index)
@@ -678,6 +686,9 @@ any time a source file changes ans serves it locally
                         help='Where to output the generated files. If not '
                         'specified, a directory will be created, named '
                         '"public" in the current path.')
+    parser.add_argument('-e', '--env', dest='env',
+                        default='test',
+                        help='Build environment (default is "test")')
     parser.add_argument('-s', '--source', default='./',
                         help='Filesystem path to read files relative from')
     parser.add_argument('-d', '--debug', action='store_const',
@@ -699,18 +710,27 @@ any time a source file changes ans serves it locally
 #
 
 
-def get_config():
+def get_config(env="test"):
     global working_dir
     config = {
         'paginate': 10,
-        'paginate-path': 'page'
+        'paginate-path': 'page',
+        'site-url': 'localhost',
+        'site-name': 'Haumea website',
+        'locale': 'fr_FR',
     }
     config_file = os.path.join(working_dir, 'config.json')
     if os.path.exists(config_file):
         filecontent = Haumea.get_file_contents(config_file)
         try:
-            config = {**config, **json.loads(filecontent)}
-            logging.debug('Config file content : %s' % filecontent)
+            config_dict = json.loads(filecontent)
+            for k, v in config_dict.items():
+                if k != 'env':
+                    config[k] = v
+                else:
+                    for kk, vv in config_dict[k][env].items():
+                        config[kk] = vv
+            logging.debug('Config file content : %s' % str(config))
         except BaseException:
             logging.warning('Unable to parse json config file : %s' % config_file)
     return config
@@ -744,7 +764,7 @@ def main():
     FORMAT = '* %(levelname)s - %(message)s'
     logging.basicConfig(level=args.verbosity, format=FORMAT)
 
-    config = get_config()
+    config = get_config(args.env)
     h = Haumea()
     if action in ["build", "b"]:
         h.build()
