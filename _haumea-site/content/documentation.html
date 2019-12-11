@@ -1,0 +1,375 @@
+---
+{
+    "title":"Documentation",
+    "nav-title" : "Docs",
+    "menus" :["main:1"]
+}
+---
+<div class="documentation">
+
+    <section>
+        <h2 id="installation">Installation </h2>
+        <p>haumea requires <span><a href="https://www.python.org/downloads/">python</a> >= 3.6</span><br/></p>
+        <div class="terminal cli">
+            <ul>
+                <li><span>pip</span> install haumea</li>
+                <li></li>
+                <li><span>haumea</span> -v</li>
+                <li>{% haumea %}</li>
+                <li></li>
+            </ul>
+        </div>
+    </section>
+    <section>
+        <h2 id="quickstart">Quickstart</h2>
+        <p>You can create a skeleton project with the <strong>haumea-quickstart</strong> command</p>
+        <div class="terminal cli">
+            <ul>
+                <li><span>haumea-quickstart</span> my-project</li>
+                <li></li>
+            </ul>
+        </div>
+        <div class="terminal w600 withoutbefore" >
+                <ul>
+                    <li>my-project</li>
+                    <li>├── content         <span># All content for your website will live inside this directory</span></li>
+                    <li>│&emsp;&emsp;└── (pages)</li>
+                    <li>├── layouts         <span># Stores .html templates files</span></li>
+                    <li>│&emsp;&emsp;└── partials</li>
+                    <li>│&emsp;&emsp;&emsp;&emsp;&emsp;└── footer.html</li>
+                    <li>│&emsp;&emsp;&emsp;&emsp;&emsp;└── header.html</li>
+                    <li>│&emsp;&emsp;&emsp;&emsp;&emsp;└── head.html</li>
+                    <li>│&emsp;&emsp;└── _base.html</li>
+                    <li>├── public          <span># Your site will be rendered into this dir</span></li>
+                    <li>└── static          <span># Stores all the static content: images, CSS, JavaScript, etc.</span></li>
+            </ul>
+        </div>
+        <p><strong>haumea build</strong> performs a build of your site to <span>./public</span> (by default)</p>
+        <div class="terminal cli">
+            <ul>
+                <li>cd my-project</li>
+                <li><span>haumea</span> build</li>
+                <li></li>
+            </ul>
+        </div>
+        <p><strong>haumea serve</strong> builds your site any time a source file changes ans serves it locally.<br/>All external data from <span>json-source</span> are cached.</p>
+        <div class="terminal cli">
+            <ul>
+                <li>cd my-project</li>
+                <li><span>haumea</span> serve</li>
+                <li></li>
+                <li>Look at http://localhost:8000</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2 id="documentation">Documentation</h2>
+        <p>Your content should be organized in a manner that reflects the rendered website.<br/>Haumea directory structure :</p>
+        <div class="terminal w600 withoutbefore" >
+            <ul>
+                <li>yourprojectname</li>
+                <li>├── content</li>
+                <li>│&emsp;&emsp;└── index.html			<span># Simple page</span></li>
+                <li>│&emsp;&emsp;└── about.html			<span># Simple page</span></li>
+                <li>│&emsp;&emsp;└── blog             		<span># Subdirectory</span></li>
+                <li>│&emsp;&emsp;&emsp;&emsp;&emsp;└── post-1.html     	<span># Simple page</span></li>
+                <li>│&emsp;&emsp;&emsp;&emsp;&emsp;└── post-2.html   		<span># Simple page</span></li>
+                <li>│&emsp;&emsp;&emsp;&emsp;&emsp;└── .post-3.html 		<span># Shortcut page</span></li>
+                <li>│&emsp;&emsp;└── products/        		<span># Subdirectory</span></li>
+                <li>│&emsp;&emsp;&emsp;&emsp;&emsp;└── _product.html 		<span># Page bundle (create from a json array of data)</span></li>
+                <li>│&emsp;&emsp;&emsp;&emsp;&emsp;└── _product.graphql	<span># graphql query</span></li>
+                <li>├── layouts</li>
+                <li>│&emsp;&emsp;└── partials</li>
+                <li>│&emsp;&emsp;&emsp;&emsp;&emsp;└── footer.html</li>
+                <li>│&emsp;&emsp;&emsp;&emsp;&emsp;└── header.html</li>
+                <li>│&emsp;&emsp;&emsp;&emsp;&emsp;└── head.html</li>
+                <li>│&emsp;&emsp;└── _base.html</li>
+                <li>├── public</li>
+                <li>└── static</li>
+            </ul>
+        </div>
+        <h3 id="directorystructuresample">Layouts templating tags</h3>
+        <p><span>./layouts/*</span></p>
+        <div class="terminal w600 withoutbefore html" >
+            <ul>
+                <li>'EXPR{{ _content }} <span># render your content into template</span></li>
+                <li></li>
+                <li>'EXPR{% include "partials/header.html" %}	<span># basic template include</span></li>
+                <li></li>
+            </ul>
+        </div>
+        <h3 id="directorystructuresample">Contents templating tags</h3>
+        <p><span>./content/*</span></p>
+        <p>Render json content (from your RESTful or GraphQL API)</p>
+        <div class="terminal w600 withoutbefore html" >
+            <ul>
+                <li>'EXPR{{ _json.short_title }}</li>
+                <li><span>&ltstrong&gt</span>'EXPR{{ _json.regular_price|{:.2f} }}<span>&lt/strong&gt</span></li>
+                <li></li>
+                <li>'EXPR{% if  _json.regular_price > 10.0 %}</li>
+                <li>&emsp;&emsp;<span>&ltspan&gt</span>Price : <span>&lt/span&gt</span>'EXPR{{ _json.regular_price|{:.2f} }}</li>
+                <li>'EXPR{% endif %}</li>
+                <li></li>
+                <li>'EXPR{% for tag in _json.data.tags %}</li>
+                <li>&emsp;&emsp;<span>&lta&gt</span>'EXPR{{ tag }}<span>&lt/a&gt</span></li>
+                <li>'EXPR{% endfor %}</li>
+                <li></li>
+                <li><span>&ltdiv&gt</span>Date : 'EXPR{{ _json.createdAt|{:%Y-%m-%d} }}<span>&lt/div&gt</span></li>
+            </ul>
+        </div>
+        <p>Render current page params</p>
+        <div class="terminal w600 withoutbefore html" >
+            <ul>
+                <li>'EXPR{{ _params.title }}</li>
+                <li>'EXPR{{ _params.nav-title }}</li>
+                <li>'EXPR{{ _params.meta-title }}</li>
+                <li>'EXPR{{ _params.meta-desc }}</li>
+                <li>'EXPR{{ _params.slug }}</li>
+                <li>...</li>
+            </ul>
+        </div>
+        <p>Render page categorized in <span>news</span> for taxonomy named <span>category</span></p>
+        <div class="terminal w600 withoutbefore html" >
+            <ul>
+                <li>'EXPR{% for page in _taxonomies.category.news %}</li>
+                <li>&emsp;&emsp;'EXPR{{ page.nav-title }}</li>
+                <li>'EXPR{% endfor %}</li>
+                <li></li>
+            </ul>
+        </div>
+        <p>Render page categorized in <span>#slug</span> (dynamic from _json or _params)</p>
+        <div class="terminal w600 withoutbefore html" >
+            <ul>
+                <li>'EXPR{% for page in _taxonomies.category.#slug %}</li>
+                <li>&emsp;&emsp;'EXPR{{ page.nav-title }}</li>
+                <li>'EXPR{% endfor %}</li>
+                <li></li>
+            </ul>
+        </div>
+        <p>Render permalink</p>
+        <div class="terminal w600 withoutbefore html" >
+            <ul>
+                <li>'EXPR{% link "about.html" %}  </li>
+                <li>'EXPR{% link "/blog/post-2020.html#more" %}</li>
+                <li>'EXPR{% link "#more" %}</li>
+                <li>...</li>
+            </ul>
+        </div>
+        <p>Render datetime</p>
+        <div class="terminal w600 withoutbefore html" >
+            <ul>
+                <li>'EXPR{% time %} <span># Output current timestamp</span></li>
+            </ul>
+        </div>
+        <p>Render haumea version</p>
+        <div class="terminal w600 withoutbefore html" >
+            <ul>
+                <li>'EXPR{% haumea %} <span># Output current haumea version</span></li>
+            </ul>
+        </div>
+        <p>Basic & advanced menu rendering</p>
+        <div class="terminal w600 withoutbefore html" >
+            <ul>
+                <li>'EXPR{% menu <span>mymainmenu</span> %}</li>
+                <li>
+                    <xmp class="html">
+<ul>
+    <li><a href="">item 1</a></li>
+    <li><a href="">item 2</a></li>
+    <li><a href="">item 3</a></li>
+</ul>
+                        </xmp></li>
+                <li></li>
+                <li>'EXPR{% menu <span>footermenu</span> a.item %}</li>
+                <li>
+                    <xmp class="html">
+<ul>
+    <li><a class="item" href="">item 1</a></li>
+    <li><a class="item" href="">item 2</a></li>
+    <li><a class="item" href="">item 3</a></li>
+</ul>
+                </xmp></li>
+                <li>'EXPR{% menu <span>mycustommenu</span> nav.menu>div.item>a.link.is-active %}</li>
+                <li>
+                    <xmp class="html">
+<nav>
+    <div><a class="link is-active" href="">item 1</a></div>
+    <div><a class="link" href="">item 2</a></div>
+    <div><a class="link" href="">item 3</a></div>
+</nav>
+                </xmp></li>
+            </ul>
+        </div>
+
+        <h3 id="directorystructuresample">Content configuration</h3>
+        <p>Haumea offers you 3 types of content : <br/>
+            Single page : <span>example.html</span></br> 
+            Page bundle : <span>_example.html</span></br> 
+            Shortcut page : <span>.example.html</span><br/></p>
+            <p><br/></p>
+        <p><strong>Single page</strong> - Example <span>content/event.html</span></p>
+        <div class="terminal w600 withoutbefore json" >
+            <pre>
+'EXPR---
+{
+    "title": "My first content",
+    "menus": ["main", "footer"],
+    "taxonomies": {
+        "tags": ["birthday", "party"],
+        "types": ["event"]
+    }
+}
+'EXPR---
+            </pre>
+        </div>
+        <p><strong>Single page</strong> from JSON or REST API - Example <span>content/page.html</span></p>
+        <div class="terminal w600 withoutbefore json" >
+           <pre>
+'EXPR---
+{
+    "json-source" : "https://api.buttercms.com/v2/pages/*/sample-page/",
+    "json-request-type" : "get",
+    "json-params" : { "locale" : "fr" , "auth_token" : "XXXXXXX" },
+    "json-root-node" : "data",
+
+    "title" : "'EXPR{{ _json.fields.title }} - 'EXPR{{ _json.fields.product_qty }}",
+    "slug" : "test",
+
+    "menus" : [ "main" ]
+}
+'EXPR---         
+           </pre>
+        </div>
+        <p><strong>Page bundle</strong> from JSON with GraphQL - Example <span>content/blog/_post.html</span></p>
+        <p><span>"json-source"</span> data must return an array.<br/>
+            Each element of the array will be used to generate a page<br/>
+            The slug must be dynamic and unique <span>'EXPR{{ _json.slug }}</span> </p>
+        <div class="terminal w600 withoutbefore json" >
+            <pre>
+'EXPR---
+{
+    "json-source" : "https://graphql.datocms.com/",
+    "json-request-type" : "graphql",
+    "json-headers" : {"Authorization":"token xxxxxxx"},
+    "json-root-node" : "data.allProduits",
+    "json-taxonomies": [ {"node":"category","field":"slug"} ],
+
+    "title": "'EXPR{{ _json.title }}",
+    "nav-title": "Navigation Title !",
+    "meta-desc" : "'EXPR{{ _json.meta_description }}",
+    "meta-title" : "'EXPR{{ _json.meta_title }}",
+    "slug" : "'EXPR{{ _json.slug }}",
+
+    "menus" : [ "products", "footer" ],
+    "layout" : "layout.html" <span># Default "_base.html"</span>
+}
+'EXPR---
+            </pre>
+        </div>
+        <p>GraphQL file - Example <span>content/blog/_post.graphql</span></p>
+        <div class="terminal w600 withoutbefore" >
+            <pre>
+query {
+    launchesPast(limit: 80) {
+        mission_name
+        details
+        launch_date_local
+        ships {
+            name
+            image
+        }
+    }
+}
+            </pre>
+        </div>
+        <p>Shortcut page - Example with <span>content/.haumea.html</span></p>
+        <div class="terminal w600 withoutbefore json" >
+            <pre>
+'EXPR---
+{
+    "title":"Haumea.io",
+    "menus" : [ "main:4" ],
+    "paginate" : "https://github.com/guillbertrand/haumea"
+}
+'EXPR---
+</pre>
+        </div>
+    </section>
+    <section>
+            <h2 id="installation">Pagination </h2>
+            <p>haumea supports pagination for your external data from json, RESTful API, GraphQL<br/>
+            You must specify the config field <span>paginate</span> to activate pagination on your content.<br/>
+            </p>
+            <p>The templating tag <span>'EXPR{% pagination %}</span> allow you to render pagination.<br/>
+            By default the following template is used : <span>layouts/_pagination.html</span><br/>
+        </p>
+            <p>Exemple #1</p>
+            <div class="terminal w600 withoutbefore html" >
+                    <xmp>'EXPR---
+{
+    "json-source" : "/data/posts.json",
+
+    "title":"Haumea.io",
+    "menus" : [ "main:4" ],
+
+    "paginate": "_json.posts"
+}
+'EXPR---
+<div class="container">
+    
+        'EXPR{% for p in _pagination.current %}
+            <div class="card">
+                <a href="'EXPR{{ p.permalink }}">'EXPR{{ p._params.nav-title }}</a>
+                <div class="content">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                
+                    'EXPR{% for tag in p._taxonomies.category %}
+                        <a href="/categories/'EXPR{{ tag }}/">#'EXPR{{ tag }}</a>
+                    'EXPR{% endfor %}
+                    
+                    <time datetime="2016-1-1">'EXPR{{ p._json.createdAt|{:%d-%m-%Y} }}</time>
+                </div>
+            </div>
+        'EXPR{% endfor %}         
+    
+    'EXPR{% pagination %}
+</div></xmp>
+
+</div>
+<p>Exemple #2</p>
+<div class="terminal w600 withoutbefore html" >
+        <xmp>'EXPR---
+{
+    "json-source" : "/data/posts.json",
+
+    "title":"Haumea.io",
+    "menus" : [ "main:4" ],
+
+    "taxonomies": {
+        "category": ["health", "news"],
+        "types": ["post"]
+    },
+
+    "paginate": "_taxonomies.types.'EXPR{{ _json.slug }}"
+}
+'EXPR---
+<div>
+        'EXPR{% for p in _pagination.current %}
+            'EXPR{{ p._json.title }}
+        'EXPR{% endfor %}      
+
+        'EXPR{% pagination "custom/pagination.html" %}
+</div></xmp>
+</div>
+<p>You can override default config param in your <span>config.json</span> file</p>
+<div class="terminal w600 withoutbefore json" >
+        <xmp>
+{
+    "paginate" : 20,        # default value : 10
+    "paginate-path" : "p",  # default value : "page"
+}
+        </xmp>
+</div>
+        </section>
+</div>
