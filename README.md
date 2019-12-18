@@ -1,4 +1,4 @@
-# haumea [![PyPI version](https://badge.fury.io/py/haumea.svg)](https://badge.fury.io/py/haumea)
+# haumea [![PyPI version](https://badge.fury.io/py/haumea.svg)](https://badge.fury.io/py/haumea) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/haumea) ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/guillbertrand/haumea)
 
 Free, fast, lightweight and easy-to-use open-source library for building static websites. Transform your data (JSON, RESTful or GraphQL) into fast static websites
 
