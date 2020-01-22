@@ -14,6 +14,7 @@ from dateutil.parser import parse
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 from http.server import HTTPServer, SimpleHTTPRequestHandler
+from urllib.parse import urlparse
 
 _QUICKSTART_PATH = os.path.join(
     os.path.dirname(
@@ -495,7 +496,8 @@ def serve():
     os.chdir(output_path)
     port = 8000
     if "site-url" in config and ':' in config['site-url']:
-            port = config['site-url'].split(':')[1]
+            o = urlparse(config['site-url'])
+            port = o.port
     httpd = HTTPServer(('localhost', int(port)), SimpleHTTPRequestHandler)
     schema = ''
     if "certfile" in config and "keyfile" in config:
@@ -732,7 +734,7 @@ def get_config(env="test"):
     config = {
         'paginate': 10,
         'paginate-path': 'page',
-        'site-url': 'localhost:8000',
+        'site-url': 'http://localhost:8000',
         'site-name': 'Haumea website',
         'locale': 'fr_FR',
     }
