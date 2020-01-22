@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import ssl
 import json
 import time
 import requests
@@ -12,6 +13,7 @@ import threading
 from dateutil.parser import parse
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
+from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 _QUICKSTART_PATH = os.path.join(
     os.path.dirname(
@@ -384,7 +386,7 @@ class Page():
                     logging.info(
                         'Load json \U0001F52D  - {:s} request -'
                         ' {:2.2f}ms : {:.80}...'.format(req_type, (te - ts) * 1000, source))
-                    logging.debug('{:s}'.format(res.text))
+                    logging.debug('Result : {:s}'.format(res.text))
             except BaseException:
                 logging.error('\U0001F4A5  Unable to load json file {:.80}'.format(source))
 
@@ -489,8 +491,19 @@ class PageBundle(Page):
 ##
 
 
-def serve(port=8000):
-    os.system("python3 -m http.server --bind 127.0.0.1 --directory %s %s" % (output_path, port))
+def serve():
+    os.chdir(output_path)
+    port = 8000
+    if "site-url" in config and ':' in config['site-url']:
+            port = config['site-url'].split(':')[1]
+    httpd = HTTPServer(('localhost', int(port)), SimpleHTTPRequestHandler)
+    schema = ''
+    if "certfile" in config and "keyfile" in config:
+        schema = 's'
+        httpd.socket = ssl.wrap_socket(httpd.socket, keyfile=os.path.join(working_dir, config["keyfile"]),
+                                certfile=os.path.join(working_dir, config["certfile"]))
+    logging.info('\U0001F5A5  Serving at http%s://localhost:%s/' % (schema, port))
+    httpd.serve_forever()
 
 ##
 
@@ -686,8 +699,6 @@ any time a source file changes ans serves it locally
 "haumea add content.html" create a blank file contant with all config params''')
     parser.add_argument('filename', default="blank.html", type=str, nargs="?",
                         help="Filename of your content")
-    parser.add_argument('-p', '--port', default=8000, type=int, nargs="?",
-                        help="Port to Listen On")
     parser.add_argument('-o', '--output', default='public/',
                         help='Where to output the generated files. If not '
                         'specified, a directory will be created, named '
@@ -721,7 +732,7 @@ def get_config(env="test"):
     config = {
         'paginate': 10,
         'paginate-path': 'page',
-        'site-url': 'localhost',
+        'site-url': 'localhost:8000',
         'site-name': 'Haumea website',
         'locale': 'fr_FR',
     }
@@ -776,7 +787,7 @@ def main():
         h.build()
     elif action in ["serve", "s"]:
         def task1():
-            serve(args.port)
+            serve()
 
         def task2():
             watch(h)
