@@ -663,11 +663,18 @@ class Haumea:
 
         # copy static assets
         try:
-            shutil.copytree(static_path, os.path.join(
-                output_path, static_path.replace(static_path, '')))
+            for item in os.listdir(static_path):
+                s = os.path.join(static_path, item)
+                d = os.path.join(output_path, item)
+                if os.path.isdir(s):
+                    shutil.copytree(s, d, False, None)
+                else:
+                    shutil.copy2(s, d)
             logging.info('Copy static directory : %s' % static_path)
         except BaseException:
             logging.warning('Unable to copy static assets : %s' % static_path)
+            tb = sys.exc_info()[2]
+            logging.debug(BaseException.with_traceback(tb))
 
         ts = time.time()
         # write files
