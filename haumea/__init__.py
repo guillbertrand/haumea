@@ -325,7 +325,7 @@ class Page():
                 if i+1 == pagination_index:
                     pagination['current'] = data[start:start+conf_paginate]
 
-            pagination['isLast'] = (pagination_index == i+1)
+            pagination['isLast'] = (pagination_index == len(data))
             pagination['Prev'] = self.get_output_filename(pagination_index-1).replace(output_path, '/')
             pagination['Next'] = self.get_output_filename(pagination_index+1).replace(output_path, '/')
         return pagination
@@ -493,6 +493,7 @@ class PageBundle(Page):
 
 
 def serve():
+    global httpd
     os.chdir(output_path)
     port = 8000
     if "site-url" in config and ':' in config['site-url']:
@@ -511,7 +512,7 @@ def serve():
 
 
 def watch(target):
-
+   
     class UpdaterHandler(PatternMatchingEventHandler):
         def on_any_event(self, event):
             try:
@@ -576,6 +577,7 @@ class Haumea:
             basenode += '["%s"]' % key
             basenode = basenode + arr if arr else basenode
         try:
+            logging.debug("eval(json_data%s)" % basenode)
             res = eval("json_data%s" % basenode)
         except BaseException:
             pass
@@ -648,7 +650,11 @@ class Haumea:
         try:
             if not os.path.exists(output_path):
                 os.makedirs(output_path)
-            shutil.rmtree(output_path)
+            for root, dirs, files in os.walk(output_path):
+                for f in files:
+                    os.unlink(os.path.join(root, f))
+                for d in dirs:
+                    shutil.rmtree(os.path.join(root, d))
             logging.info('Clean output path : %s' % output_path)
         except BaseException:
             logging.warning('Unable to clean output path : %s' % output_path)
@@ -657,11 +663,18 @@ class Haumea:
 
         # copy static assets
         try:
-            shutil.copytree(static_path, os.path.join(
-                output_path, static_path.replace(static_path, '')))
+            for item in os.listdir(static_path):
+                s = os.path.join(static_path, item)
+                d = os.path.join(output_path, item)
+                if os.path.isdir(s):
+                    shutil.copytree(s, d, False, None)
+                else:
+                    shutil.copy2(s, d)
             logging.info('Copy static directory : %s' % static_path)
         except BaseException:
             logging.warning('Unable to copy static assets : %s' % static_path)
+            tb = sys.exc_info()[2]
+            logging.debug(BaseException.with_traceback(tb))
 
         ts = time.time()
         # write files
