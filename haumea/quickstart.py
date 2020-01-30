@@ -44,6 +44,7 @@ def main():
                 'Create content layouts "%s/static/"' %
                 args.yourprojectname)
             logger.info('Add sample files...')
+            logger.info('Add config file...')
             logger.info('\U0001F331  Yeah ! your project is ready \U0001F331')
             logger.info(
                 'Try to run the command "cd %s && haumea serve" to test it !'

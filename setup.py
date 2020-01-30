@@ -12,12 +12,13 @@ entry_points = {
 
 setuptools.setup(
     name="haumea",
-    version="0.71.5",
+    version="0.72.2",
     author="Guillaume Betrand",
     author_email="gbe.io@pm.me",
     description="Small & fast python library to build static websites",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    include_package_data=True,
     url="https://github.com/guillbertrand/haumea",
     keywords='SSG graphql json python static website generator ',
     packages=setuptools.find_packages(),
