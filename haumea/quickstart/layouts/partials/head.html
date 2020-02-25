@@ -1,9 +1,15 @@
 <head>
-
+    <!-- Doctype HTML5 -->
+    <!doctype html>
+    <!-- Set character encoding for the document -->
     <meta charset="utf-8">
+    <!-- Instruct Internet Explorer to use its latest rendering engine -->
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <!-- Viewport for responsive web design -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <html lang="en">
+    <html dir="ltr">    
 
     <meta property="og:description" content="{{ _params.meta-desc }}" />
     <meta property="og:title" content="{{ _params.title }}" />
@@ -13,9 +19,7 @@
     <meta property="og:site_name" content="{{ _config.site-name }}" />
     <meta property="og:generator" content="Haumea {% haumea %}" />
 
-    <meta name="description" content="{{ _params.meta-desc }}" />
-
-    <meta name="robots" content="{{ _params.meta-robots }}" />
-
     <title>{{ _params.title }}</title>
+    <meta name="description" content="{{ _params.meta-desc }}" />
+    <meta name="robots" content="{{ _params.meta-robots }}" />
 </head>

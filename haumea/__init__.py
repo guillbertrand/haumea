@@ -658,8 +658,7 @@ class Haumea:
             logging.info('Clean output path : %s' % output_path)
         except BaseException:
             logging.warning('Unable to clean output path : %s' % output_path)
-            tb = sys.exc_info()[2]
-            logging.debug(BaseException.with_traceback(tb))
+            logging.debug(sys.exc_info()[1])
 
         # copy static assets
         try:
@@ -673,8 +672,7 @@ class Haumea:
             logging.info('Copy static directory : %s' % static_path)
         except BaseException:
             logging.warning('Unable to copy static assets : %s' % static_path)
-            tb = sys.exc_info()[2]
-            logging.debug(BaseException.with_traceback(tb))
+            logging.debug(sys.exc_info()[1])
 
         ts = time.time()
         # write files
@@ -688,6 +686,10 @@ class Haumea:
                 f.write(page_content)
                 f.close()
                 logging.info('\U00002728  Render page \U0001F527  %s' % (page.output_filename.replace(working_dir, '')))
+
+        # check if index.html exists
+        if not os.path.exists(os.path.join(output_path,'index.html')):
+            shutil.copyfile(os.path.join(output_path,'page-1/index.html'), os.path.join(output_path,'index.html'))
 
         te = time.time()
         nb = len(self.pages)
